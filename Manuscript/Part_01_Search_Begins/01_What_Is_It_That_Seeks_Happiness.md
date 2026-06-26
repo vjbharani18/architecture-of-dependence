@@ -8,78 +8,86 @@ Mine did not begin with God.
 
 It did not begin with Vedānta.
 
-It did not even begin with the question, "Who am I?"
+It did not begin with trying to prove one philosophy over another.
 
 It began with a much simpler question.
 
+---
+
+## Question
+
 **What am I really seeking?**
 
-At first, the answer seemed obvious.
+Or am I seeking anything at all?
 
-Happiness.
+If happiness is what I seek,
 
-Like everyone else, every important decision I made appeared to be directed, in one way or another, towards happiness.
+where does it lie?
 
-Work.
+---
+
+The question stayed with me.
+
+Almost everything I did seemed to point, in one way or another, towards happiness.
+
+Education.
+
+Career.
 
 Relationships.
-
-Achievement.
 
 Security.
 
 Knowledge.
 
-Even spiritual enquiry seemed, at least indirectly, to promise a more enduring form of happiness.
+Even the desire to understand philosophy.
 
-Yet another question immediately followed.
+Everything appeared to promise that happiness lay just a little further ahead.
+
+Yet I realised that I had never asked a much simpler question.
 
 If happiness is what I seek,
 
-where does it actually exist?
+what exactly is happiness?
+
+Where does it lie?
 
 Does it belong to the world?
 
 Does it belong to the mind?
 
-Does it belong to God?
+Does it belong to me?
 
-Or does it belong to me?
+I did not know.
 
-The question remained with me.
+---
 
-Around the same time, another realization quietly emerged.
+Another question quietly accompanied it.
 
-I found that I was not merely looking for comforting answers.
+Why was I interested in philosophy at all?
 
-I was looking for explanations that were internally consistent.
+I noticed that I was not merely looking for answers.
 
-Whenever an explanation appeared to resolve one difficulty while creating another, the enquiry refused to stop.
+I was looking for explanations that remained internally consistent.
 
-Logical consistency did not merely satisfy curiosity.
+Whenever one explanation appeared to solve a question while creating another,
 
-It gave a certain satisfaction to the enquiry itself.
+the enquiry continued.
 
-This gradually drew me toward philosophy.
+It was not enough for an explanation to sound convincing.
 
-Not because I wished to defend a particular school.
+I wanted to know whether it continued to remain convincing when questioned again.
 
-But because I wanted to understand which explanations remained coherent when examined carefully.
+---
 
-As the enquiry continued, another difficulty appeared.
+## Next Question
 
 If happiness belongs to me,
 
-who exactly is this "me"?
+who exactly is this **"me"?**
 
-The question now became unavoidable.
+Before asking where happiness lies,
 
-Before asking where happiness exists,
+shouldn't I first understand who is seeking it?
 
-I first had to understand
-
-who—or what—is seeking it.
-
-That question became the beginning of self-enquiry.
-
-The remainder of this book begins there.
+That became the next question.

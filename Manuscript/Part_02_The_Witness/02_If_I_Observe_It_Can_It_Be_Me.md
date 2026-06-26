@@ -4,23 +4,25 @@
 
 The previous chapter ended with a simple question.
 
-If happiness is what I seek,
+If happiness belongs to me,
 
-I must first understand who—or what—is seeking.
+who exactly is this **"me"?**
 
-The enquiry therefore began with the most immediate candidate.
+The enquiry began with the most immediate possibility.
 
 The body.
 
-The exercise itself was simple.
+---
 
-Observe the body.
+## Question
 
-Can that which is observed truly be identical with the observer?
+If I can observe the body,
 
-The answer did not appear convincing.
+am I the body?
 
-The body changes continuously.
+---
+
+The body changes.
 
 Childhood.
 
@@ -34,96 +36,102 @@ Health.
 
 Illness.
 
-Yet throughout these changes there remains an undeniable intuition that the one who says "I" persists.
+Everything changes.
 
-If I can observe the body,
+Yet throughout these changes,
 
-perhaps I am not identical with it.
+there remains an undeniable feeling that the one who says "I" continues.
 
-The enquiry then moved inward.
+If I can observe these changes,
+
+can I really be identical with the body?
+
+The question did not seem settled.
+
+So the enquiry continued.
+
+---
+
+## Question
+
+If I can observe my thoughts,
+
+am I my thoughts?
 
 Thoughts arise.
 
 Thoughts disappear.
 
-Memories return.
+Sometimes they arrive without invitation.
 
-Emotions fluctuate.
+Sometimes they refuse to leave.
 
-Desires emerge without invitation and vanish without explanation.
+Yet I can notice them.
 
-Yet each of these also appears before awareness.
+I can examine them.
+
+I can even disagree with them.
 
 If thoughts themselves are observed,
 
 can they be the observer?
 
-The same question was asked again.
+The same question appeared again.
 
-Memories.
+---
 
-Emotions.
+## Question
 
-Intentions.
+If I can observe memories,
 
-Each appeared.
+emotions,
 
-Each disappeared.
+desires,
 
-Each became something that could itself be examined.
+and intentions,
+
+can any of them be what I fundamentally am?
 
 One by one,
 
-the familiar candidates for personal identity became increasingly difficult to defend.
+each appeared to become something that could itself be examined.
 
 The body.
 
 The mind.
 
-Emotion.
+Thoughts.
 
 Memory.
 
-Even personality appeared more like a continuously changing pattern than a permanent self.
+Emotion.
 
-Something nevertheless seemed to remain.
+None of them appeared to completely answer the question.
 
-Not as an object of experience,
+Something nevertheless remained.
 
-but as that before which every experience appeared.
+Not as something I observed,
+
+but as that before which everything else appeared.
 
 The witness.
 
-At first,
+For a moment,
 
-this seemed deeply satisfying.
+this seemed satisfying.
 
-It appeared that the enquiry had reached its first stable answer.
+---
 
-Yet the satisfaction did not last.
+## Next Question
 
-Another question quietly emerged.
+If everything boils down to the witness,
 
-If the witness alone is fundamental,
+where does multiplicity come about?
 
-why does reality appear irreducibly diverse?
+Why do I not experience your thoughts?
 
-Why do different individuals possess different streams of experience?
+Why do you not experience mine?
 
-Why do different minds think different thoughts?
+Why does reality appear genuinely plural?
 
-Why does the world appear genuinely plural rather than merely apparently so?
-
-The witness had answered one question.
-
-It had immediately created another.
-
-The enquiry had reached its first crossroads.
-
-The next question was no longer,
-
-**"Who is the witness?"**
-
-It became,
-
-**"Why are there many?"**
+That became the next question.

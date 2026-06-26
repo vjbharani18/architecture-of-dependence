@@ -2,96 +2,98 @@
 
 # Why Are Souls Different?
 
-The previous chapter ended with a simple observation.
+The previous chapter ended with a simple question.
 
-Difference appears everywhere.
+If different philosophical traditions are trying to explain the same world,
 
-The next question followed naturally.
+why do they arrive at different explanations?
+
+I began reading them,
+
+not to decide which one was true,
+
+but to understand how each approached the problem.
+
+---
+
+## Question
 
 If souls are genuinely different,
 
 what explains that difference?
 
-Several possibilities presented themselves.
+Were they always different?
 
-Perhaps souls were originally identical,
+Did they become different?
 
-and difference emerged later.
+If they became different,
 
-Perhaps difference belonged only to appearance.
+what caused the difference?
 
-Or perhaps difference itself was fundamental.
+If they were always different,
 
-At this stage,
+does that itself require an explanation?
 
-I had not reached any conclusion.
+---
 
-I simply wanted to understand what each philosophical tradition proposed.
+As I read further,
 
-The more I read,
+one thing immediately stood out.
 
-the more I noticed that different schools answered different questions first.
+Advaita began exactly where my enquiry had begun.
 
-Advaita first drew my attention because it began with the Self.
+The Self.
 
-The enquiry started exactly where mine had begun.
+The witness.
 
-Who am I?
+The question,
 
-Dvaita, by contrast,
+*"Who am I?"*
 
-seemed initially to begin more directly with God.
+That immediately resonated with me.
 
-Coming from a predominantly Dvaita environment,
+Coming from a largely Dvaita background,
 
 I found this interesting.
 
-Advaita immediately engaged the question that had first brought me into philosophy.
+The first serious philosophical enquiry I encountered began with the same question I had begun asking myself.
 
-Yet as the enquiry continued,
+For that reason,
 
-new questions emerged.
+Advaita became the first system I explored in depth.
 
-If multiplicity ultimately belongs to appearance,
+Not because I had accepted it.
 
-what exactly is the status of that appearance?
+Because it was answering the question I happened to be asking.
 
-If plurality is real,
+As the enquiry continued,
 
-what explains its beginning?
+another realization slowly appeared.
 
-If souls are eternally different,
-
-why are they different?
-
-Every answer seemed to create another question.
-
-Rather than discouraging the enquiry,
-
-this made it more interesting.
-
-I gradually realised that I was not merely comparing conclusions.
+I was no longer comparing conclusions.
 
 I was comparing explanations.
 
-Not every explanation satisfied me equally.
+Some explanations appeared to answer the question directly.
 
-Some appeared to answer the question directly.
+Others appeared to move the question somewhere else.
 
-Others seemed to postpone it.
+Others seemed to replace one mystery with another.
 
-Others appeared to replace one mystery with another.
+I still did not know which philosophy was correct.
 
-I did not yet know which explanation was correct.
+That was no longer the question.
 
-But I had begun asking a new question.
+The question had become,
 
-Not,
+**"Which explanation continues to remain internally consistent when questioned again?"**
 
-**"Which philosophy is true?"**
+That became the method by which every explanation was examined.
 
-Instead,
+---
 
-**"Which philosophy remains internally consistent when questioned carefully?"**
+## Next Question
 
-That question would quietly guide the remainder of the enquiry.
+Advaita appeared to answer the problem of multiplicity through the idea of Māyā.
+
+What exactly does that explain?

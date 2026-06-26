@@ -1,95 +1,93 @@
 # Chapter Three
 
-# Why Are There Many Witnesses?
+# If Everything Boils Down to the Witness, Where Does Multiplicity Come About?
 
-The previous chapter appeared to end with a satisfying answer.
+The previous chapter ended with a question that refused to leave.
 
-If the body, mind, thoughts and memories could all be observed,
+If I am not the body,
 
-perhaps I was fundamentally the witness.
+not my thoughts,
 
-For a brief moment,
+not my emotions,
 
-the enquiry appeared settled.
+then what remains?
 
-Yet another question quietly emerged.
+The witness appeared to be the only answer that made sense.
 
-If the witness alone is fundamental,
+For a while,
 
-why are there many?
+that felt satisfying.
 
-The difficulty did not arise from philosophy.
+Then another question appeared.
 
-It arose from ordinary experience.
+---
 
-I do not experience your thoughts.
+## Question
 
-You do not experience mine.
+If everything boils down to the witness,
 
-Our memories differ.
+where does multiplicity come about?
 
-Our choices differ.
+Where does the world come about?
 
-Our experiences differ.
+Where do thoughts come about?
 
-If witnessing awareness alone is ultimately real,
+Why do I not experience your thoughts?
 
-how should this undeniable plurality be understood?
+Why do you not experience mine?
 
-At first,
+---
 
-I tried to treat multiplicity as something secondary.
+I did not arrive at these questions by reading philosophy.
 
-Perhaps difference belonged only to appearance.
+I arrived at them simply by looking at the world.
 
-Yet the more carefully I observed the world,
+Difference appeared everywhere.
 
-the less convincing that seemed.
+No two people thought exactly alike.
 
-Everything appeared unique.
+No two experiences were exactly the same.
 
-Every person.
+Even when two people lived through the same event,
 
-Every tree.
-
-Every animal.
-
-Every experience.
+they understood it differently.
 
 Difference did not appear accidental.
 
-It appeared woven into reality itself.
+It appeared fundamental.
 
-This question became impossible to ignore.
+The more I thought about it,
 
-If plurality is merely apparent,
+the more difficult it became to treat plurality as something that could simply be ignored.
 
-how does such persistent diversity arise?
+If there is only one witness,
 
-If plurality is real,
+why does reality appear as many?
 
-what explains it?
+If there are many,
 
-The enquiry had now moved beyond self-enquiry.
+what explains the many?
 
-It had become an enquiry into reality itself.
+The question had quietly changed.
 
-This was also the point at which I began looking more carefully at the different schools of Vedānta.
-
-Advaita.
-
-Viśiṣṭādvaita.
-
-Dvaita.
-
-Not because I had chosen one.
-
-But because each appeared to offer a different explanation for the same question.
-
-The enquiry was no longer asking,
+I was no longer asking,
 
 **"Who am I?"**
 
-It had become,
+I was asking,
 
-**"Why are there many?"**
+**"What kind of reality am I living in?"**
+
+That question naturally led me towards Vedānta.
+
+Not because I had chosen a school.
+
+Because I wanted to know how each school explained the same problem.
+
+---
+
+## Next Question
+
+If different philosophical traditions all begin with the same world,
+
+why do they explain it so differently?

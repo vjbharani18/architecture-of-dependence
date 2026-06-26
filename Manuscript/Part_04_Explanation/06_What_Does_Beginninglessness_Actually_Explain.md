@@ -2,70 +2,82 @@
 
 # What Does Beginninglessness Actually Explain?
 
-The previous chapter left me with an unexpected question.
+The previous chapter ended with a question.
 
-What makes an explanation satisfying?
+If *anirvacanīya* marks the point where one explanation stops,
 
-The enquiry now moved away from Advaita and more seriously into Dvaita.
+what happens when I ask the same question elsewhere?
 
-One idea appeared repeatedly.
+I found myself asking the same questions while trying to understand Dvaita.
 
-The beginninglessness of karma.
+---
+
+## Question
+
+If souls are eternally different,
+
+what explains that difference?
+
+If they have always been different,
+
+does that itself require an explanation?
+
+---
+
+One answer that appeared repeatedly was the beginninglessness of karma.
+
+Later I encountered the expression **pravāhānādi** (during my own enquiry I had initially referred to it as *sampravaha anadi*).
 
 The idea itself was not difficult to understand.
 
-What interested me was something else.
+The question that interested me was different.
 
-What explanatory work was the idea performing?
+---
 
-Suppose I ask,
+## Question
 
-"Why are souls different?"
+Does beginninglessness actually explain the difference?
 
-If the answer is,
+Or does it only explain why there is no first beginning?
 
-"Because beginningless karma has always existed,"
+If karma is beginningless,
 
-another question naturally follows.
+what explanatory work is the word *beginningless* performing?
 
-Does beginninglessness explain the difference?
+---
 
-Or does it simply remove the need for a first beginning?
+The more I thought about it,
 
-The same pattern appeared again and again.
+the more I noticed that the same kind of question was appearing again.
 
-Whenever the enquiry reached a first cause,
+In one place,
 
-the explanation seemed to appeal to something beginningless.
+I had asked,
 
-This did not immediately appear wrong.
+*"Does anirvacanīya explain?"*
 
-It simply led to another question.
+Now I found myself asking,
 
-What exactly has been explained?
-
-At this point,
-
-I found myself comparing this with questions that had already arisen elsewhere.
-
-Does anirvacanīya explain?
-
-Does beginninglessness explain?
-
-Or do these expressions identify the point beyond which explanation no longer proceeds?
+*"Does beginninglessness explain?"*
 
 These were not objections.
 
-They were genuine attempts to understand what an explanation is expected to accomplish.
+They were the same question being asked of two different explanations.
 
-It slowly became clear that my enquiry had changed.
+---
 
-I was no longer asking only about karma.
+## Question
 
-Nor only about māyā.
+At what point should I say that an explanation has actually explained something,
 
-I had begun asking a more general question.
+rather than simply giving the difficulty a name?
 
-When does philosophy actually explain something?
+---
 
-That question would remain with me for the rest of the enquiry.
+That question slowly became more important than the individual doctrines themselves.
+
+---
+
+## Next Question
+
+What does it mean for an explanation to be logically satisfying?

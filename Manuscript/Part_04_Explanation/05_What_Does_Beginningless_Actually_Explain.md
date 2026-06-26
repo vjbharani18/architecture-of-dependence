@@ -1,87 +1,99 @@
 # Chapter Five
 
-# Does Māyā Explain the World?
+# Does Māyā Actually Explain the World?
 
-The previous chapter ended with a different kind of question.
+The previous chapter ended with a question.
 
-I was no longer comparing conclusions.
+Different philosophical traditions appeared to be trying to explain the same world.
 
-I had begun comparing explanations.
-
-Advaita had initially appealed to me because it began exactly where my enquiry had begun.
+I began with the one that started where my own enquiry had started.
 
 The Self.
 
 The witness.
 
-The investigation of identity.
+---
 
-For some time, the progression appeared natural.
+## Question
 
-If the witness alone is ultimately real,
+If everything boils down to the witness,
 
-perhaps plurality required another kind of explanation.
+how does Advaita explain the world?
 
-This eventually brought me to one of the central ideas in Advaita.
+How does multiplicity come about?
 
-Māyā.
+---
+
+The first idea I repeatedly encountered was Māyā.
 
 At first,
 
-the idea appeared profound.
+it appeared to answer exactly the question I was asking.
 
-It seemed to explain why the world is experienced while ultimate reality remains non-dual.
+The world is experienced.
 
-Yet the more I reflected upon it,
+Ultimate reality remains non-dual.
 
-the more questions emerged.
+For a while,
 
-Where does māyā exist?
+that appeared satisfying.
+
+Then more questions emerged.
+
+---
+
+## Question
+
+Where does Māyā exist?
 
 If Brahman alone is ultimately real,
 
-can māyā belong to Brahman?
+can Māyā belong to Brahman?
 
-If not,
+If it does not,
 
 what is its locus?
 
-If māyā is neither absolutely real nor absolutely unreal,
+---
 
-what exactly does that mean?
+As I continued reading,
 
-I repeatedly encountered the expression
+another expression appeared repeatedly.
 
-*anirvacanīya*.
+**Anirvacanīya.**
+
+Neither real.
+
+Nor unreal.
 
 Indefinable.
 
-Neither real nor unreal.
+I understood why the expression was being used.
 
-I understood why the expression was used.
+But another question immediately followed.
 
-Yet another question quietly appeared.
+---
 
-Does calling something "indefinable"
+## Question
 
-explain the difficulty,
+Does calling something *anirvacanīya*
 
-or merely describe it?
+explain the difficulty?
 
-The enquiry had reached another turning point.
+Or does it simply describe the point at which explanation stops?
 
-For the first time,
+---
 
-I found myself asking not whether a doctrine was elegant,
+The question was no longer whether the doctrine was elegant.
 
-but whether it resolved the question I had begun with.
+The question had quietly become something else.
 
-The next question became unavoidable.
+When does an explanation actually explain?
 
-If one explanation leaves me asking
+---
 
-"What does this actually mean?",
+## Next Question
 
-how should I recognise a satisfactory explanation?
+If one explanation reaches *anirvacanīya*,
 
-The enquiry had begun examining explanations themselves.
+what does another philosophical tradition offer instead?
