@@ -8,7 +8,7 @@ The earlier [volume-1](./volume-1) folder is an early scaffold and should be tre
 
 ## Volume I Workflow
 
-- [Master manuscript](./Manuscript/Volume1.md)
+- [Master manuscript](Manuscript/Volume1_Index.md)
 - [Method of enquiry](./Manuscript/02_Method_of_Enquiry.md)
 - [Question bank](./Research/QUESTION_BANK.md)
 - [Open loops](./Research/OPEN_LOOPS.md)
