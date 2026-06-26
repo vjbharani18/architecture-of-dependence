@@ -1,160 +1,87 @@
-# Chapter 5: What Does "Beginningless" Actually Explain?
+# Chapter Five
 
-> The word "beginningless" appears in almost every major school of Indian philosophy. But what work is the word actually doing?
+# Does Māyā Explain the World?
 
-## Enquiry 5.1
+The previous chapter ended with a different kind of question.
 
-**Question**
+I was no longer comparing conclusions.
 
-The word *anadi* appears repeatedly.
+I had begun comparing explanations.
 
-Beginningless ignorance.
+Advaita had initially appealed to me because it began exactly where my enquiry had begun.
 
-Beginningless karma.
+The Self.
 
-Beginningless samsara.
+The witness.
 
-Beginningless creation.
+The investigation of identity.
 
-Beginningless difference.
+For some time, the progression appeared natural.
 
-Suppose something is called beginningless.
+If the witness alone is ultimately real,
 
-What has actually been explained?
+perhaps plurality required another kind of explanation.
 
-**Current Understanding**
+This eventually brought me to one of the central ideas in Advaita.
 
-At the very least, one thing has been ruled out.
+Māyā.
 
-There was never a first moment.
+At first,
 
-The entity did not suddenly appear in time.
+the idea appeared profound.
 
-That much is clear.
+It seemed to explain why the world is experienced while ultimate reality remains non-dual.
 
-But another question immediately arises.
+Yet the more I reflected upon it,
 
-Is removing a beginning the same as explaining existence?
+the more questions emerged.
 
-**The Enquiry Continues**
+Where does māyā exist?
 
-If someone asks, "What is space?" it would not be sufficient to answer, "It has always existed."
+If Brahman alone is ultimately real,
 
-Likewise, if karma is beginningless, does that tell us what karma is, or only that it has no first temporal origin?
+can māyā belong to Brahman?
 
-## Enquiry 5.2
+If not,
 
-**Question**
+what is its locus?
 
-Perhaps "beginningless" is not meant to explain existence.
+If māyā is neither absolutely real nor absolutely unreal,
 
-Perhaps it merely prevents an infinite regress.
+what exactly does that mean?
 
-Would that be sufficient?
+I repeatedly encountered the expression
 
-**Current Understanding**
+*anirvacanīya*.
 
-This appears stronger.
+Indefinable.
 
-Suppose karma required an earlier karma.
+Neither real nor unreal.
 
-That earlier karma would require another.
+I understood why the expression was used.
 
-The regress would never terminate.
+Yet another question quietly appeared.
 
-Calling karma beginningless prevents the search for a first event.
+Does calling something "indefinable"
 
-Yet preventing an infinite regress is not necessarily the same as providing an ontology.
+explain the difficulty,
 
-**The Enquiry Continues**
+or merely describe it?
 
-If beginninglessness prevents one problem, what positively explains the reality itself?
+The enquiry had reached another turning point.
 
-## Enquiry 5.3
+For the first time,
 
-**Question**
+I found myself asking not whether a doctrine was elegant,
 
-Advaita speaks of beginningless ignorance.
+but whether it resolved the question I had begun with.
 
-Dvaita speaks of beginningless karma.
+The next question became unavoidable.
 
-Are these uses structurally different?
+If one explanation leaves me asking
 
-Or are they solving similar problems in different ways?
+"What does this actually mean?",
 
-**Current Understanding**
+how should I recognise a satisfactory explanation?
 
-This became a turning point.
-
-Initially it appeared that Dvaita had escaped the difficulty encountered in Advaita.
-
-Advaita appealed to *anirvacaniya*.
-
-Dvaita appealed to beginningless karma.
-
-The vocabulary had changed.
-
-The logical question had not.
-
-Both systems eventually reached explanatory primitives.
-
-The real comparison therefore became:
-
-> Which primitive assumption explains more while assuming less?
-
-**The Enquiry Continues**
-
-Perhaps every philosophical system eventually reaches concepts beyond which explanation cannot proceed.
-
-If so, how should philosophical systems be compared?
-
-## Enquiry 5.4
-
-**Question**
-
-Suppose every philosophy eventually reaches primitive assumptions.
-
-Is there any fair way to compare them?
-
-**Current Understanding**
-
-A complete absence of assumptions appears impossible.
-
-Every system must eventually stop somewhere.
-
-The more useful question may therefore be:
-
-> What assumptions must this philosophy accept before the remainder becomes intelligible?
-
-This became the method adopted throughout the enquiry.
-
-## What Have We Learned?
-
-1. "Beginningless" removes the need for a first temporal event.
-2. It does not, by itself, explain ontology.
-3. Every major philosophical system eventually reaches explanatory primitives.
-4. Philosophies should be compared by the structure of their assumptions rather than by isolated doctrines.
-
-## Interlude I: The Child Who Keeps Asking "Why?"
-
-A child asks, "Why does the apple fall?"
-
-Gravity.
-
-"Why gravity?"
-
-Curvature of spacetime.
-
-"Why curvature?"
-
-Mass-energy.
-
-"Why does mass curve spacetime?"
-
-Eventually every explanation reaches a point where another explanation is no longer available.
-
-The interesting question is not whether explanation eventually stops.
-
-It must.
-
-The interesting question is where it stops, and whether what remains is sufficient to support everything built upon it.
+The enquiry had begun examining explanations themselves.
