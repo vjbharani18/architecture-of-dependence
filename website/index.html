@@ -62,6 +62,8 @@ canvas { position:fixed; inset:0; pointer-events:none; }
 #sound-btn { background:none; border:1px solid rgba(212,168,83,.35); color:rgba(212,168,83,.8); font-family:'Rajdhani',sans-serif; font-size:.62rem; letter-spacing:.18em; text-transform:uppercase; padding:6px 12px; cursor:pointer; }
 #sound-btn:hover, #sound-btn.on { color:var(--bg); background:var(--gold); border-color:var(--gold); }
 #sound-btn { min-width:86px; }
+#narration-btn { background:none; border:1px solid rgba(0,200,240,.3); color:rgba(0,200,240,.72); font-family:'Rajdhani',sans-serif; font-size:.62rem; letter-spacing:.16em; text-transform:uppercase; padding:6px 10px; cursor:pointer; min-height:30px; }
+#narration-btn:hover, #narration-btn.on { color:var(--bg); background:var(--cyan); border-color:var(--cyan); }
 
 /* ─── SCREENS ────────────────────────────────── */
 .screen { position:fixed; inset:0; z-index:10;
@@ -223,6 +225,8 @@ canvas { position:fixed; inset:0; pointer-events:none; }
 @media(max-width:600px){ #top-nav{padding:0 14px}.nav-logo{font-size:.52rem}.nav-logo strong{display:none}#nav-progress{display:none}#nav-map-btn{padding:6px 9px}.ch-context{grid-template-columns:1fr}.chapter-nav{grid-template-columns:1fr}.chapter-nav button:last-child{text-align:left}#ch-meta{left:0;right:0;padding:24px 22px 22px}#ch-body{padding:30px 22px 50px} }
 @media(max-width:600px){
   #top-nav{height:48px}
+  #sound-btn,#narration-btn,#nav-map-btn{font-size:.52rem;letter-spacing:.08em;padding:6px 7px}
+  #sound-btn{min-width:72px}
   #s-chapter{padding-top:48px}
   #ch-hero{height:42vh;min-height:290px}
   #ch-meta{padding:20px 18px 18px}
@@ -296,6 +300,7 @@ canvas { position:fixed; inset:0; pointer-events:none; }
   <div class="nav-logo"><strong>Architecture</strong> of Dependence &nbsp;·&nbsp; Vol. I</div>
   <div id="nav-progress"></div><div id="nav-order"></div>
   <button id="sound-btn" aria-pressed="false">Sound off</button>
+  <button id="narration-btn" aria-pressed="false">Narration off</button>
   <button id="nav-map-btn">◉ &nbsp;Chapter Map</button>
 </nav>
 
@@ -1030,6 +1035,7 @@ function openChapter(idx) {
     document.getElementById('nav-progress').textContent=(readingPos+1)+' / '+readingOrder.length+' perspectives';
   }
   goTo('s-chapter', ()=>{ document.getElementById('s-chapter').scrollTo(0,0); });
+  narrateChapter(idx);
   const prev = (idx + 23) % 24, next = (idx + 1) % 24;
   document.querySelector('#prev-ch span').textContent = 'Chapter '+CHAPTERS[prev].num+' · '+CHAPTERS[prev].title;
   document.querySelector('#next-ch span').textContent = 'Chapter '+CHAPTERS[next].num+' · '+CHAPTERS[next].title;
@@ -1085,9 +1091,84 @@ function tuneSound(idx){
 document.getElementById('sound-btn').addEventListener('click', async ()=>{
   const btn=document.getElementById('sound-btn');
   const on=btn.classList.toggle('on');
-  if (on) { tuneSound(currentCh<0?0:currentCh); await music.play().catch(() => {}); }
+  if (on) { tuneSound(currentCh<0?0:currentCh); setMusicVolume(); await music.play().catch(() => {}); }
   else music.pause();
   btn.textContent=on?'Sound on':'Sound off'; btn.setAttribute('aria-pressed',on);
+});
+
+let narrationOn = false;
+let narrationActive = false;
+let narrationVoice = null;
+let narrationRun = 0;
+const NARRATION_TRACKS = Array(24).fill(null);
+for (let i=0; i<13; i++) NARRATION_TRACKS[i] = `audio/narration/chapter-${String(i+1).padStart(2,'0')}.mp3`;
+const narrationAudio = new Audio();
+narrationAudio.preload = 'metadata';
+narrationAudio.onended = () => { narrationActive=false; setMusicVolume(); };
+function chooseNarrationVoice(){
+  if (!('speechSynthesis' in window)) return null;
+  const voices = speechSynthesis.getVoices();
+  narrationVoice = voices.find(v => /David|Daniel|George|Alex|UK English Male|Google UK English Male/i.test(v.name))
+    || voices.find(v => /^en(-|_)/i.test(v.lang)) || voices[0] || null;
+  return narrationVoice;
+}
+if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = chooseNarrationVoice;
+function setMusicVolume(){ music.volume = narrationActive ? .18 : .62; }
+function narrateChapter(idx){
+  if (!narrationOn || !CHAPTERS[idx]) return;
+  const run = ++narrationRun;
+  speechSynthesis.cancel();
+  narrationAudio.pause();
+  narrationAudio.currentTime = 0;
+  narrationActive = false;
+  setMusicVolume();
+  const naturalTrack = NARRATION_TRACKS[idx];
+  if (naturalTrack) {
+    narrationAudio.src = naturalTrack;
+    narrationActive = true;
+    setMusicVolume();
+    narrationAudio.play().catch(() => { narrationActive=false; setMusicVolume(); });
+    return;
+  }
+  if (!('speechSynthesis' in window)) { narrationActive=false; setMusicVolume(); return; }
+  const ch = CHAPTERS[idx];
+  const passages = [
+    {text:`Chapter ${ch.num}. ${ch.title}.`, rate:.78, pitch:.62},
+    {text:`The question. ${ch.q}`, rate:.82, pitch:.68},
+    {text:ch.body.replace(/\n+/g,' '), rate:.9, pitch:.74}
+  ];
+  let passage = 0;
+  const finishNarration = () => {
+    if (run !== narrationRun) return;
+    narrationActive = false;
+    setMusicVolume();
+  };
+  const speakNext = () => {
+    if (!narrationOn || run !== narrationRun) { finishNarration(); return; }
+    if (passage >= passages.length) { finishNarration(); return; }
+    const part = passages[passage++];
+    const utterance = new SpeechSynthesisUtterance(part.text);
+    utterance.voice = narrationVoice || chooseNarrationVoice();
+    utterance.rate = part.rate;
+    utterance.pitch = part.pitch;
+    utterance.volume = .98;
+    utterance.onstart = () => { narrationActive = true; setMusicVolume(); };
+    utterance.onend = () => {
+      if (passage < passages.length) setTimeout(speakNext, 420);
+      else finishNarration();
+    };
+    utterance.onerror = finishNarration;
+    speechSynthesis.speak(utterance);
+  };
+  speakNext();
+}
+document.getElementById('narration-btn').addEventListener('click', ()=>{
+  const btn=document.getElementById('narration-btn');
+  narrationOn = btn.classList.toggle('on');
+  btn.textContent = narrationOn ? 'Narration on' : 'Narration off';
+  btn.setAttribute('aria-pressed', narrationOn);
+  if (narrationOn) narrateChapter(currentCh < 0 ? 0 : currentCh);
+  else { narrationRun++; narrationActive=false; narrationAudio.pause(); narrationAudio.currentTime=0; setMusicVolume(); if ('speechSynthesis' in window) speechSynthesis.cancel(); }
 });
 
 document.addEventListener('keydown',e=>{
