@@ -61,6 +61,7 @@ canvas { position:fixed; inset:0; pointer-events:none; }
 #sound-btn, #nav-map-btn { min-height:30px; }
 #sound-btn { background:none; border:1px solid rgba(212,168,83,.35); color:rgba(212,168,83,.8); font-family:'Rajdhani',sans-serif; font-size:.62rem; letter-spacing:.18em; text-transform:uppercase; padding:6px 12px; cursor:pointer; }
 #sound-btn:hover, #sound-btn.on { color:var(--bg); background:var(--gold); border-color:var(--gold); }
+#sound-btn { min-width:86px; }
 
 /* ─── SCREENS ────────────────────────────────── */
 .screen { position:fixed; inset:0; z-index:10;
@@ -220,6 +221,15 @@ canvas { position:fixed; inset:0; pointer-events:none; }
 .chapter-nav small { display:block; color:rgba(0,200,240,.55); font-size:.52rem; letter-spacing:.2em; text-transform:uppercase; margin-bottom:5px; }
 .chapter-nav span { font-size:.78rem; line-height:1.25; }
 @media(max-width:600px){ #top-nav{padding:0 14px}.nav-logo{font-size:.52rem}.nav-logo strong{display:none}#nav-progress{display:none}#nav-map-btn{padding:6px 9px}.ch-context{grid-template-columns:1fr}.chapter-nav{grid-template-columns:1fr}.chapter-nav button:last-child{text-align:left}#ch-meta{left:0;right:0;padding:24px 22px 22px}#ch-body{padding:30px 22px 50px} }
+@media(max-width:600px){
+  #top-nav{height:48px}
+  #s-chapter{padding-top:48px}
+  #ch-hero{height:42vh;min-height:290px}
+  #ch-meta{padding:20px 18px 18px}
+  #ch-heading{font-size:1.35rem}
+  #map-label{top:62px;padding:0 20px;line-height:1.5}
+  #ch-tooltip{display:none}
+}
 .sug-head {
   font-size:0.58rem; letter-spacing:0.35em; color:rgba(0,200,240,0.4);
   text-transform:uppercase; margin-bottom:24px; display:flex; align-items:center; gap:12px;
@@ -306,7 +316,7 @@ canvas { position:fixed; inset:0; pointer-events:none; }
   </h1>
   <p class="i-vol">Volume I &nbsp;·&nbsp; A Philosophical Enquiry</p>
   <div class="i-rule"></div>
-  <p class="i-sub">24 questions. Nine paths. No single order.<br>Every door you choose changes what you see.</p>
+  <p class="i-sub">24 questions. Nine paths. Begin with the question that opens the enquiry.<br>Then follow the dependencies until the final question returns you to the beginning.</p>
   <button id="btn-map-free">or enter the chapter map freely</button>
   <button id="btn-enter"><span>Enter the Enquiry &nbsp;→</span></button>
 </div>
@@ -529,10 +539,14 @@ let currentCh = -1;
 let readingOrder = [];
 let readingPos = -1;
 function beginReadingOrder() {
-  const pool = Array.from({length:23}, (_,i)=>i);
-  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
-  readingOrder=[...pool,23]; readingPos=-1;
-  document.getElementById('nav-order').textContent='Personal order · finale reserved';
+  // The guided route supplies a hook, a rising chain of questions, and a return.
+  // The map remains non-linear; only the main entrance needs this narrative spine.
+  readingOrder=[
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+    12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
+  ];
+  readingPos=-1;
+  document.getElementById('nav-order').textContent='Guided enquiry · opening to return';
   openChapter(readingOrder[0]);
 }
 const visited = new Set(
@@ -684,7 +698,7 @@ let animT = 0;
 
 function getPos(i) {
   const cx = MW/2, cy = MH/2;
-  const R = Math.min(MW,MH) * 0.36;
+  const R = Math.min(MW,MH) * (MW < 600 ? 0.30 : 0.36);
   const angle = -Math.PI/2 + (i/24)*Math.PI*2;
   return { x: cx+Math.cos(angle)*R, y: cy+Math.sin(angle)*R, angle };
 }
@@ -791,7 +805,7 @@ function drawMap() {
   });
 
   // Center mandala
-  const innerR = Math.min(MW,MH)*0.11;
+  const innerR = Math.min(120, Math.max(70, Math.min(MW,MH)*(MW < 600 ? 0.18 : 0.11)));
   mctx.save(); mctx.translate(cx,cy);
   mctx.rotate(animT*0.3);
   for (let s=0; s<8; s++) {
@@ -808,6 +822,13 @@ function drawMap() {
   mctx.beginPath(); mctx.arc(cx,cy,innerR*0.4,0,Math.PI*2);
   mctx.fillStyle=cGrad; mctx.fill();
 
+  // A generous, glowing touch target makes the central "sphere" feel like an iPod wheel.
+  const wheelR = Math.max(56, innerR * 0.72);
+  mctx.beginPath(); mctx.arc(cx,cy,wheelR,0,Math.PI*2);
+  mctx.strokeStyle = `rgba(0,200,240,${hoveredCh === -2 ? .45 : .12})`;
+  mctx.lineWidth = hoveredCh === -2 ? 2 : 1;
+  mctx.stroke();
+
   requestAnimationFrame(drawMap);
 }
 
@@ -818,7 +839,7 @@ mapCanvas.addEventListener('mousemove', e => {
   if (!mapActive) return;
   const rect = mapCanvas.getBoundingClientRect();
   const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-  let closest = -1, minD = 28;
+  let closest = -1, minD = MW < 600 ? 44 : 28;
   nodePositions.forEach(({x,y},i) => {
     const d = Math.hypot(mx-x,my-y);
     if (d < minD) { minD=d; closest=i; }
@@ -840,6 +861,29 @@ mapCanvas.addEventListener('mousemove', e => {
       tt.style.opacity='0';
     }
   }
+});
+
+function mapPointer(x, y) {
+  const cx=MW/2, cy=MH/2;
+  if (Math.hypot(x-cx,y-cy) < Math.max(56, Math.min(120, Math.max(70, Math.min(MW,MH)*(MW < 600 ? .18 : .11)))*.72)) {
+    hoveredCh = -2;
+    document.getElementById('ch-tooltip').style.opacity='0';
+    return;
+  }
+  let closest=-1, minD=MW < 600 ? 44 : 28;
+  nodePositions.forEach(({x:nx,y:ny},i)=>{ const d=Math.hypot(x-nx,y-ny); if(d<minD){minD=d;closest=i;} });
+  hoveredCh=closest;
+}
+
+mapCanvas.addEventListener('pointermove', e => {
+  if (!mapActive) return;
+  const r=mapCanvas.getBoundingClientRect(); mapPointer(e.clientX-r.left,e.clientY-r.top);
+  mapCanvas.style.cursor=hoveredCh>=0?'pointer':hoveredCh===-2?'grab':'default';
+});
+mapCanvas.addEventListener('pointerup', e => {
+  if (!mapActive) return;
+  const r=mapCanvas.getBoundingClientRect(); mapPointer(e.clientX-r.left,e.clientY-r.top);
+  if (hoveredCh>=0) openChapter(hoveredCh);
 });
 
 mapCanvas.addEventListener('mouseleave',()=>{
@@ -1017,11 +1061,33 @@ const SOUND_PROFILES=[
 function tuneSound(idx){ beatProfile=CH_PART[idx]||0; }
 function blip(freq,duration,type,volume,pan=0){ const now=audioCtx.currentTime, o=audioCtx.createOscillator(), g=audioCtx.createGain(), p=audioCtx.createStereoPanner(); o.type=type;o.frequency.setValueAtTime(freq,now);g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(volume,now+.008);g.gain.exponentialRampToValueAtTime(.0001,now+duration);p.pan.value=pan;o.connect(g).connect(p).connect(masterGain);o.start(now);o.stop(now+duration+.02); }
 function tickBeat(){ if(!audioCtx)return; const p=SOUND_PROFILES[beatProfile], s=beatStep%p.cycle, bar=Math.floor(beatStep/p.cycle), swing=(s%2?p.swing:0), pan=p.pan+Math.sin(beatStep*.37)*.35; if(s===0||s===7||s===11) blip(48, .18,'sine',.075,pan); if(s===4||s===10||s===14%p.cycle) blip(1800+(bar%3)*220,.045,'square',.018,-pan); if(s%3===1) blip(p.root*(s%5===0?2:1),.22,'triangle',.028,pan); if((bar+s)%9===4) blip(p.root*3,.35,'sine',.018,-pan); beatStep++; beatTimer=setTimeout(tickBeat,Math.max(70,60000/p.bpm/2*(1+swing))); }
+const TRACKS = [
+  'audio/whispers-in-the-shadows.mp3','audio/graveyard-whispers.mp3',
+  'audio/dark-mystery-cinematic.mp3','audio/mysterious-place.mp3',
+  'audio/supernatural-grandeur.mp3','audio/supernatural-dark-ambient.mp3'
+];
+// Deliberate chapter cues: each question gets a fitting atmosphere, while
+// adjacent chapters can share a track so the transition does not feel abrupt.
+const CHAPTER_TRACKS = [
+  0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 5,
+  5, 4, 2, 1, 0, 1, 2, 3, 4, 5, 1, 0
+];
+const music = new Audio(); music.loop = true; music.preload = 'metadata';
+function tuneSound(idx){
+  const nextSrc = TRACKS[CHAPTER_TRACKS[idx] ?? 0];
+  const currentSrc = music.getAttribute('src') || '';
+  if (currentSrc.endsWith(nextSrc)) return;
+  const wasPlaying = !music.paused;
+  music.src = nextSrc;
+  music.load();
+  if (wasPlaying) music.play().catch(() => {});
+}
 document.getElementById('sound-btn').addEventListener('click', async ()=>{
   const btn=document.getElementById('sound-btn');
-  if(!audioCtx){ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); masterGain=audioCtx.createGain(); masterGain.gain.value=0; masterGain.connect(audioCtx.destination); tuneSound(currentCh<0?0:currentCh); }
-  if(audioCtx.state==='suspended') await audioCtx.resume();
-  const on=btn.classList.toggle('on'); masterGain.gain.cancelScheduledValues(audioCtx.currentTime); masterGain.gain.linearRampToValueAtTime(on?.72:0,audioCtx.currentTime+.8); if(on){beatStep=0;clearTimeout(beatTimer);tickBeat();}else clearTimeout(beatTimer); btn.textContent=on?'Beat on':'Beat off'; btn.setAttribute('aria-pressed',on);
+  const on=btn.classList.toggle('on');
+  if (on) { tuneSound(currentCh<0?0:currentCh); await music.play().catch(() => {}); }
+  else music.pause();
+  btn.textContent=on?'Sound on':'Sound off'; btn.setAttribute('aria-pressed',on);
 });
 
 document.addEventListener('keydown',e=>{
