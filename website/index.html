@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Architecture of Dependence — Volume I</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+/* ─── RESET ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:   #030509;
+  --cyan: #00C8F0;
+  --dim:  #004466;
+  --crim: #A03934;
+  --gold: #D4A853;
+  --txt:  #D8EEFF;
+  --nav-h: 52px;
+}
+html, body { width:100%; height:100%; overflow:hidden; background:var(--bg);
+  font-family:'Rajdhani',sans-serif; color:var(--txt); }
+
+/* ─── CANVAS LAYERS ──────────────────────────── */
+canvas { position:fixed; inset:0; pointer-events:none; }
+#c-stars   { z-index:1; }
+#c-kaleido { z-index:2; opacity:0; transition:opacity 1s; }
+#c-grid    { z-index:3; opacity:0; transition:opacity 1.2s; }
+#c-map     { z-index:4; opacity:0; transition:opacity 0.8s; cursor:default; }
+#c-atmos   { z-index:5; opacity:0; transition:opacity 1.2s; }
+#c-hyper   { z-index:200; }
+
+/* ─── TOP NAV ────────────────────────────────── */
+#top-nav {
+  position:fixed; top:0; left:0; right:0; height:var(--nav-h); z-index:150;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 28px;
+  background:linear-gradient(180deg,rgba(3,5,9,0.95) 0%,rgba(3,5,9,0) 100%);
+  border-bottom:1px solid rgba(0,200,240,0.07);
+  opacity:0; pointer-events:none; transition:opacity 0.6s;
+}
+#top-nav.vis { opacity:1; pointer-events:all; }
+.nav-logo {
+  font-size:0.65rem; letter-spacing:0.3em; color:rgba(0,200,240,0.55);
+  text-transform:uppercase; font-weight:600;
+}
+.nav-logo strong { color:var(--cyan); }
+#nav-map-btn {
+  background:none; border:1px solid rgba(0,200,240,0.3); color:rgba(0,200,240,0.7);
+  font-family:'Rajdhani',sans-serif; font-size:0.65rem; letter-spacing:0.25em;
+  text-transform:uppercase; padding:6px 18px; cursor:pointer;
+  transition:border-color 0.3s, color 0.3s, background 0.3s;
+}
+#nav-map-btn:hover { border-color:var(--cyan); color:var(--bg); background:var(--cyan); }
+#nav-progress {
+  font-size:0.6rem; letter-spacing:0.2em; color:rgba(0,200,240,0.35);
+  text-transform:uppercase;
+}
+#nav-order { font-size:.58rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(212,168,83,.7); }
+#nav-actions { display:flex; align-items:center; gap:10px; }
+#sound-btn, #nav-map-btn { min-height:30px; }
+#sound-btn { background:none; border:1px solid rgba(212,168,83,.35); color:rgba(212,168,83,.8); font-family:'Rajdhani',sans-serif; font-size:.62rem; letter-spacing:.18em; text-transform:uppercase; padding:6px 12px; cursor:pointer; }
+#sound-btn:hover, #sound-btn.on { color:var(--bg); background:var(--gold); border-color:var(--gold); }
+
+/* ─── SCREENS ────────────────────────────────── */
+.screen { position:fixed; inset:0; z-index:10;
+  opacity:0; pointer-events:none; transition:opacity 0.6s ease; }
+.screen.on { opacity:1; pointer-events:all; }
+
+/* ─── INTRO ──────────────────────────────────── */
+#s-intro {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:0; z-index:50;
+}
+.i-eye {
+  font-size:0.65rem; letter-spacing:0.4em; color:var(--cyan);
+  text-transform:uppercase; font-weight:600; margin-bottom:20px;
+  animation:riseIn 1.2s ease both;
+}
+.i-title {
+  font-size:clamp(2.8rem,7vw,5.2rem); font-weight:700; text-align:center;
+  text-transform:uppercase; letter-spacing:0.06em; line-height:1;
+  animation:riseIn 1.5s ease both;
+}
+.i-t1 { display:block; color:var(--txt);
+  text-shadow:0 0 60px rgba(0,200,240,0.25), 0 0 120px rgba(0,200,240,0.1); }
+.i-t2 { display:block; color:var(--crim);
+  text-shadow:0 0 60px rgba(160,57,52,0.4), 0 0 120px rgba(160,57,52,0.15); }
+.i-vol {
+  font-size:0.72rem; letter-spacing:0.3em; color:rgba(216,238,255,0.35);
+  text-transform:uppercase; margin-top:14px; animation:riseIn 1.8s ease both;
+}
+.i-rule {
+  width:160px; height:1px; margin:28px auto;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  animation:riseIn 2s ease both;
+}
+.i-sub {
+  font-family:'Crimson Text',serif; font-style:italic; font-size:1.05rem;
+  color:rgba(216,238,255,0.45); max-width:360px; text-align:center;
+  line-height:1.7; animation:riseIn 2.2s ease both; margin-bottom:44px;
+}
+#btn-enter {
+  position:relative; overflow:hidden;
+  padding:13px 48px; background:transparent;
+  border:1.5px solid var(--cyan); color:var(--cyan);
+  font-family:'Rajdhani',sans-serif; font-size:0.8rem; font-weight:600;
+  letter-spacing:0.35em; text-transform:uppercase; cursor:pointer;
+  animation:riseIn 2.4s ease both, btnPulse 2.5s ease-in-out 2.4s infinite;
+}
+#btn-enter::before {
+  content:''; position:absolute; inset:0; background:var(--cyan);
+  transform:scaleX(0); transform-origin:left; transition:transform 0.35s ease;
+}
+#btn-enter:hover::before { transform:scaleX(1); }
+#btn-enter span { position:relative; z-index:1; transition:color 0.35s; }
+#btn-enter:hover span { color:var(--bg); }
+#btn-map-free { margin-top:14px; background:none; border:0; color:rgba(216,238,255,.42); font:500 .66rem 'Rajdhani',sans-serif; letter-spacing:.22em; text-transform:uppercase; cursor:pointer; }
+#btn-map-free:hover { color:var(--cyan); }
+
+/* ─── MAP OVERLAY (text UI over constellation canvas) ── */
+#s-map { z-index:20; pointer-events:none; }
+#s-map.on { pointer-events:none; } /* canvas handles clicks */
+#map-label {
+  position:fixed; top:calc(var(--nav-h) + 14px); left:0; right:0;
+  text-align:center; font-size:0.58rem; letter-spacing:0.35em;
+  color:rgba(0,200,240,0.35); text-transform:uppercase;
+  animation:mapHint 3s ease-in-out infinite;
+}
+@keyframes mapHint { 0%,100%{opacity:.35} 50%{opacity:.7} }
+/* Chapter tooltip */
+#ch-tooltip {
+  position:fixed; z-index:160; pointer-events:none;
+  background:rgba(3,5,9,0.9); border:1px solid rgba(0,200,240,0.3);
+  padding:12px 16px; max-width:260px; opacity:0; transition:opacity 0.2s;
+}
+#ch-tooltip .tt-part { font-size:0.55rem; letter-spacing:0.3em;
+  text-transform:uppercase; margin-bottom:5px; font-weight:600; }
+#ch-tooltip .tt-num  { font-size:0.6rem; color:rgba(216,238,255,0.4); margin-bottom:3px; }
+#ch-tooltip .tt-title{ font-size:0.82rem; color:var(--txt); line-height:1.35; }
+#ch-tooltip .tt-hint { font-size:0.6rem; color:rgba(0,200,240,0.4);
+  margin-top:8px; letter-spacing:0.15em; text-transform:uppercase; }
+
+/* ─── CHAPTER SCREEN ─────────────────────────── */
+#s-chapter { z-index:30; overflow-y:auto; padding-top:var(--nav-h); }
+#s-chapter::-webkit-scrollbar { width:3px; }
+#s-chapter::-webkit-scrollbar-thumb { background:rgba(0,200,240,0.2); }
+
+/* Hero */
+#ch-hero {
+  position:relative; width:100%; height:48vh; min-height:240px;
+  overflow:hidden; flex-shrink:0;
+}
+#ch-hero img {
+  width:100%; height:100%; object-fit:cover; object-position:center top;
+  transform:scale(1);
+  transform-origin:center top;
+  filter:brightness(0.84) saturate(0.92) contrast(0.96);
+  transition:transform 0.8s ease;
+}
+#s-chapter.on #ch-hero img { transform:scale(1); }
+#ch-hero::before {
+  content:''; position:absolute; inset:0; z-index:1;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,
+    rgba(0,0,0,0.04) 3px,rgba(0,0,0,0.04) 4px);
+}
+#ch-hero-grad {
+  position:absolute; inset:0; z-index:2;
+  background:linear-gradient(0deg,var(--bg) 0%,rgba(3,5,9,0.94) 21%,rgba(3,5,9,0.34) 52%,rgba(3,5,9,0.08) 100%);
+}
+#ch-meta { position:absolute; bottom:0; left:0; right:0; z-index:3; padding:30px 44px 28px; background:linear-gradient(90deg,rgba(3,5,9,.96),rgba(3,5,9,.72) 60%,rgba(3,5,9,.25)); border-top:1px solid rgba(0,200,240,.12); }
+#ch-eyebrow {
+  font-size:0.6rem; letter-spacing:0.35em; font-weight:600;
+  text-transform:uppercase; margin-bottom:10px;
+}
+#ch-heading {
+  font-size:clamp(1.35rem,2.8vw,2.15rem); font-weight:700; color:var(--txt);
+  text-shadow:0 2px 24px rgba(0,0,0,0.9); line-height:1.25; max-width:760px;
+}
+
+/* Body */
+#ch-body { max-width:720px; margin:0 auto; padding:40px 44px 60px; }
+.ch-context { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:0 0 34px; }
+.context-card { border:1px solid rgba(0,200,240,.12); padding:14px 16px; background:rgba(0,200,240,.025); }
+.context-label { display:block; font-size:.52rem; letter-spacing:.24em; text-transform:uppercase; color:rgba(0,200,240,.45); margin-bottom:7px; }
+.context-value { font-family:'Crimson Text',serif; font-size:1rem; line-height:1.4; color:rgba(216,238,255,.72); }
+.ch-sep { width:70px; height:2px; margin-bottom:32px;
+  background:linear-gradient(90deg,var(--crim),transparent); }
+
+/* Question box */
+.q-box {
+  border:1px solid rgba(160,57,52,0.4); background:rgba(160,57,52,0.05);
+  padding:22px 26px; margin-bottom:28px; position:relative;
+}
+.q-box::before {
+  content:'QUESTION'; position:absolute; top:-9px; left:14px;
+  font-size:0.52rem; letter-spacing:0.25em; font-weight:700; color:var(--crim);
+  background:var(--bg); padding:0 8px;
+}
+.q-box p {
+  font-family:'Crimson Text',serif; font-size:1.12rem; line-height:1.75;
+  color:rgba(216,238,255,0.9); font-style:italic;
+}
+
+/* Content */
+.ch-content {
+  font-family:'Crimson Text',serif; font-size:1.05rem;
+  line-height:1.9; color:rgba(216,238,255,0.6);
+}
+.ch-content p { margin-bottom:1.1em; }
+
+/* ─── SUGGESTIONS ────────────────────────────── */
+#suggestions {
+  margin-top:52px; border-top:1px solid rgba(0,200,240,0.1); padding-top:36px;
+}
+.chapter-nav { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:44px; }
+.chapter-nav button { min-height:64px; background:rgba(0,200,240,.025); border:1px solid rgba(0,200,240,.18); color:var(--txt); text-align:left; padding:12px 16px; cursor:pointer; font-family:'Rajdhani',sans-serif; transition:background .25s,border-color .25s; }
+.chapter-nav button:last-child { text-align:right; }
+.chapter-nav button:hover { background:rgba(0,200,240,.1); border-color:var(--cyan); }
+.chapter-nav small { display:block; color:rgba(0,200,240,.55); font-size:.52rem; letter-spacing:.2em; text-transform:uppercase; margin-bottom:5px; }
+.chapter-nav span { font-size:.78rem; line-height:1.25; }
+@media(max-width:600px){ #top-nav{padding:0 14px}.nav-logo{font-size:.52rem}.nav-logo strong{display:none}#nav-progress{display:none}#nav-map-btn{padding:6px 9px}.ch-context{grid-template-columns:1fr}.chapter-nav{grid-template-columns:1fr}.chapter-nav button:last-child{text-align:left}#ch-meta{left:0;right:0;padding:24px 22px 22px}#ch-body{padding:30px 22px 50px} }
+.sug-head {
+  font-size:0.58rem; letter-spacing:0.35em; color:rgba(0,200,240,0.4);
+  text-transform:uppercase; margin-bottom:24px; display:flex; align-items:center; gap:12px;
+}
+.sug-head::after { content:''; flex:1; height:1px; background:rgba(0,200,240,0.1); }
+.sug-cards {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px;
+}
+.sug-card {
+  position:relative; overflow:hidden; cursor:pointer;
+  border:1px solid rgba(255,255,255,0.07); background:rgba(3,5,9,0.6);
+  transition:border-color 0.3s, transform 0.3s;
+}
+.sug-card:hover { transform:translateY(-3px); }
+.sug-card-img {
+  width:100%; height:90px; overflow:hidden;
+}
+.sug-card-img img {
+  width:100%; height:100%; object-fit:cover; filter:brightness(0.55) saturate(0.7);
+  transition:filter 0.3s, transform 0.4s;
+}
+.sug-card:hover .sug-card-img img { filter:brightness(0.75) saturate(0.9); transform:scale(1.05); }
+.sug-card-body { padding:14px 16px; }
+.sug-part-tag {
+  font-size:0.5rem; letter-spacing:0.25em; font-weight:700;
+  text-transform:uppercase; margin-bottom:5px;
+}
+.sug-num { font-size:0.58rem; color:rgba(216,238,255,0.3); margin-bottom:4px; }
+.sug-title { font-size:0.78rem; color:var(--txt); line-height:1.35; margin-bottom:8px; font-weight:500; }
+.sug-reason { font-size:0.68rem; color:rgba(216,238,255,0.4); line-height:1.4;
+  font-family:'Crimson Text',serif; font-style:italic; }
+.sug-card::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+}
+.sug-card-arrow {
+  position:absolute; top:10px; right:12px;
+  font-size:0.65rem; color:rgba(255,255,255,0.2); transition:color 0.3s;
+}
+.sug-card:hover .sug-card-arrow { color:var(--cyan); }
+
+/* ─── ANIMATIONS ─────────────────────────────── */
+@keyframes riseIn {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes btnPulse {
+  0%,100% { box-shadow:0 0 10px rgba(0,200,240,0.25), 0 0 30px rgba(0,200,240,0.08); }
+  50%      { box-shadow:0 0 22px rgba(0,200,240,0.6),  0 0 60px rgba(0,200,240,0.25); }
+}
+</style>
+</head>
+<body>
+
+<!-- CANVAS LAYERS -->
+<canvas id="c-stars"></canvas>
+<canvas id="c-kaleido"></canvas>
+<canvas id="c-grid"></canvas>
+<canvas id="c-map"></canvas>
+<canvas id="c-atmos"></canvas>
+<canvas id="c-hyper"></canvas>
+
+<!-- TOP NAV -->
+<nav id="top-nav">
+  <div class="nav-logo"><strong>Architecture</strong> of Dependence &nbsp;·&nbsp; Vol. I</div>
+  <div id="nav-progress"></div><div id="nav-order"></div>
+  <button id="sound-btn" aria-pressed="false">Sound off</button>
+  <button id="nav-map-btn">◉ &nbsp;Chapter Map</button>
+</nav>
+
+<!-- TOOLTIP -->
+<div id="ch-tooltip">
+  <div class="tt-part" id="tt-part"></div>
+  <div class="tt-num"  id="tt-num"></div>
+  <div class="tt-title"id="tt-title"></div>
+  <div class="tt-hint">Click to enter</div>
+</div>
+
+<!-- SCREENS -->
+<div id="s-intro" class="screen on">
+  <p class="i-eye">Vijay · 2026</p>
+  <h1 class="i-title">
+    <span class="i-t1">The Architecture</span>
+    <span class="i-t2">of Dependence</span>
+  </h1>
+  <p class="i-vol">Volume I &nbsp;·&nbsp; A Philosophical Enquiry</p>
+  <div class="i-rule"></div>
+  <p class="i-sub">24 questions. Nine paths. No single order.<br>Every door you choose changes what you see.</p>
+  <button id="btn-map-free">or enter the chapter map freely</button>
+  <button id="btn-enter"><span>Enter the Enquiry &nbsp;→</span></button>
+</div>
+
+<div id="s-map" class="screen">
+  <div id="map-label">Hover a chapter node &nbsp;·&nbsp; Click to enter &nbsp;·&nbsp; Lines show thematic connections</div>
+</div>
+
+<div id="s-chapter" class="screen">
+  <div id="ch-hero">
+    <img id="ch-img" src="" alt="">
+    <div id="ch-hero-grad"></div>
+    <div id="ch-meta">
+      <div id="ch-eyebrow"></div>
+      <h2 id="ch-heading"></h2>
+    </div>
+  </div>
+  <div id="ch-body">
+    <div class="ch-sep"></div>
+    <div class="ch-context"><div class="context-card"><span class="context-label">A way in</span><span class="context-value" id="ch-way-in"></span></div><div class="context-card"><span class="context-label">This chapter changes</span><span class="context-value" id="ch-turn"></span></div></div>
+    <div class="q-box"><p id="ch-q"></p></div>
+    <div class="ch-content" id="ch-content"></div>
+    <div id="suggestions">
+      <div class="sug-head">Continue the Enquiry</div>
+      <div class="sug-cards" id="sug-cards"></div>
+    </div>
+    <div class="chapter-nav"><button id="prev-ch"><small>Previous perspective</small><span></span></button><button id="next-ch"><small>Next perspective</small><span></span></button></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════════════════ */
+const PART_COLORS = [
+  '#00C8F0', // I  — cyan
+  '#A78BFA', // II — violet
+  '#FCD34D', // III— gold
+  '#34D399', // IV — emerald
+  '#FB923C', // V  — orange
+  '#F472B6', // VI — pink
+  '#F87171', // VII— coral-red
+  '#2DD4BF', // VIII—teal
+  '#818CF8', // IX — indigo
+];
+
+const PARTS = [
+  { roman:'I',    title:'The Search Begins',            chs:[1],          desc:'Every conscious being seeks happiness. But what exactly is the "I" that seeks it?' },
+  { roman:'II',   title:'The Witness',                  chs:[2],          desc:'If body, mind, and thoughts can be observed — what remains as the observer?' },
+  { roman:'III',  title:'Difference',                   chs:[3,4],        desc:'The witness appears singular. Experience is plural. How does multiplicity arise?' },
+  { roman:'IV',   title:'Explanation',                  chs:[5,6],        desc:'When does an explanation genuinely explain? When does it merely rename the difficulty?' },
+  { roman:'V',    title:'The Soul',                     chs:[7,8,9,10],   desc:'What belongs intrinsically to the soul? What belongs only through experience?' },
+  { roman:'VI',   title:'Experience',                   chs:[11,12,13],   desc:'Happiness and suffering appear universal. Where do they exist? What do they belong to?' },
+  { roman:'VII',  title:'Dependence',                   chs:[14,15,16,17],desc:'If everything depends on God, what — if anything — belongs independently to the soul?' },
+  { roman:'VIII', title:'The Limits of Explanation',    chs:[18,19,20,21],desc:'What do beginninglessness, svabhāva, and physics actually explain?' },
+  { roman:'IX',   title:'What Is Saṃsāra Doing?',      chs:[22,23,24],   desc:'Does saṃsāra transform the soul — or reveal what was always already there?' },
+];
+
+const CHAPTERS = [
+  { num:1,  title:'What Is It That Seeks Happiness?',
+    q:'What am I really seeking? Or am I seeking anything at all?',
+    body:'Everything I did seemed to point towards happiness — education, career, relationships, knowledge. Yet I had never asked a simpler question: if happiness is what I seek, what exactly is happiness? Where does it lie?\n\nThe enquiry began not with God, not with Vedānta, but with this ordinary, unavoidable observation. The question stayed. Almost everything I observed seemed to promise happiness lay a little further ahead. Yet I had never asked what happiness itself was — or whether it truly lay ahead at all.',
+    img:'images/ch01.jpg' },
+  { num:2,  title:'If I Observe It, Can It Be Me?',
+    q:'If I can observe the body — am I the body?',
+    body:'The body changes — childhood, youth, adulthood. If I observe those changes, the observer appears to remain the same. The same question applies to the mind. If I observe a thought, the thought and the observer appear to be different.\n\nWho or what is doing the observing? Can that observer itself be observed? If it can, there must be yet another observer behind it. The enquiry forced an unfamiliar question: is there something that simply watches — without itself being an object of watching?',
+    img:'images/ch02.jpg' },
+  { num:3,  title:'If Everything Boils Down to the Witness, Where Does Multiplicity Come About?',
+    q:'If everything boils down to the witness — where does the world come about?',
+    body:'If there is one witness, how do many experiences arise? The question became increasingly difficult. Every answer seemed to either deny multiplicity entirely — which contradicted experience — or fail to explain how multiplicity arose from something singular.\n\nThe difficulty was not merely theoretical. It determined what kind of answer was even possible. If multiplicity cannot be explained without remainder, any philosophy that assumes a single ultimate reality must account for this gap honestly.',
+    img:'images/ch03.jpg' },
+  { num:4,  title:'Why Are Souls Different?',
+    q:'If souls are genuinely different — what explains that difference?',
+    body:'Were souls always different? Did they become different through experience? If they always were, why? If they became different, what caused the first divergence?\n\nEach answer produced a further question. The enquiry revealed that difference is not a trivial philosophical problem. It sits at the heart of how any system must understand causation, relation, and God\'s role — because if God created souls, and souls differ, the difference must have a source.',
+    img:'images/ch04.jpg' },
+  { num:5,  title:'Does Māyā Actually Explain the World?',
+    q:'If everything boils down to one witness — how does Advaita explain the world?',
+    body:'The answer I encountered was māyā — a power that makes the one appear as many. But what explanatory work does this concept actually perform? If māyā is ultimately unreal, the problem it dissolves is also ultimately unreal. And if the problem is unreal, was it ever a genuine problem?\n\nThe enquiry pressed: an explanation that dissolves itself may not be an explanation at all. It may be an especially elegant way of refusing the question.',
+    img:'images/ch05.jpg' },
+  { num:6,  title:'What Does Beginninglessness Actually Explain?',
+    q:'If souls are eternally different — does that itself require explanation?',
+    body:'The concept of beginninglessness appears in nearly every Indian philosophical tradition. But what does it actually explain? If karma is beginningless, the question of why different souls have different karma is not solved — it is relocated upstream, where it cannot be examined.\n\nThe enquiry asked directly: does declaring something beginningless resolve a difficulty, or does it merely place the difficulty beyond reach? A beginningless stream still flows — and flows in a particular direction.',
+    img:'images/ch06.jpg' },
+  { num:7,  title:'What Is the Soul Before It Knows?',
+    q:'Before asking what happens to the soul — what is the soul itself?',
+    body:'Every tradition I encountered described the soul in terms of its experiences or its qualities in liberation. But what is the soul prior to any of these? Is knowledge intrinsic to the soul, or does the soul merely have the capacity for knowledge?\n\nThe question turned out to determine everything that followed. If knowledge is intrinsic, liberation means removal of obstruction. If knowledge is acquired, liberation means something else entirely. The soul before knowing became the key question.',
+    img:'images/ch07.jpg' },
+  { num:8,  title:'What Belongs to the Soul?',
+    q:'Does happiness belong to the soul? Or is happiness something the soul experiences?',
+    body:'Happiness appeared to vary — sometimes present, sometimes absent. If it belonged to the soul intrinsically, how could it vary? If it did not belong to the soul, what exactly was the soul seeking?\n\nThe enquiry forced a distinction that seemed simple but proved philosophically consequential: the difference between what a thing is and what a thing has. This distinction changed what suffering meant, what liberation meant, and what karma could possibly do.',
+    img:'images/ch08.jpg' },
+  { num:9,  title:'What Does Svarūpa Actually Mean?',
+    q:'What does svarūpa mean — not as a translation, but as a philosophical idea?',
+    body:'The usual answer was: the intrinsic nature of a thing. But which qualities are intrinsic? If a quality can be absent without the thing ceasing to exist, is it truly intrinsic?\n\nThis question determined whether happiness, knowledge, and bliss were attributes the soul acquired through experience, or what the soul simply was in its essential nature. The answer had consequences for every subsequent question in the enquiry.',
+    img:'images/ch09.jpg' },
+  { num:10, title:'Is Knowledge Different from Experience?',
+    q:'If I experience something — have I already known it?',
+    body:'At first, knowledge and experience seemed inseparable — to experience pain appears to be to know pain. But the enquiry revealed a distinction that many traditions maintained carefully: knowledge as a mode intrinsic to the soul, and experience as something that required an object and a moment in time.\n\nWhether they are the same or different changes what liberation means entirely. If knowledge and experience are identical, the liberated soul experiences everything. If they are different, what liberation delivers becomes far more subtle.',
+    img:'images/ch10.jpg' },
+  { num:11, title:'Is Suffering a Reality or Merely the Absence of Happiness?',
+    q:'When I say "I am suffering" — has something been added, or merely removed?',
+    body:'If suffering is only the absence of happiness, then it is not itself a positive reality. The soul never truly contains suffering — it merely lacks happiness in that moment. But this seemed to deny something obvious: suffering felt like a genuine presence, not merely a gap.\n\nThe philosophical and experiential answers appeared to conflict. The enquiry was unwilling to dismiss either. It pressed both: what kind of reality does suffering actually have?',
+    img:'images/ch11.jpg' },
+  { num:12, title:'Is Darkness Merely the Absence of Light?',
+    q:'Is darkness merely the absence of light — and does that settle the question of suffering?',
+    body:'The analogy appeared attractive: just as darkness is not a thing but the absence of light, suffering might be not a thing but the absence of happiness. But the analogy was examined carefully.\n\nDoes physics actually treat darkness as a mere absence? And even if it does — does that settle the philosophical question of suffering? An analogy can clarify a concept or conceal a difficulty. The enquiry wanted to know which it was doing here.',
+    img:'images/ch12.jpg' },
+  { num:13, title:'Where Does Happiness Actually Exist?',
+    q:'If happiness belongs to the object — why do different people experience the same object differently?',
+    body:'One person delights in silence; another is disturbed by it. The same object, opposite experiences. This suggested happiness was not in the object. But then where? In the soul? In the mind? In the relationship between them?\n\nEach location produced its own difficulties, and none resolved cleanly. The enquiry found that the question of where happiness exists was not separable from the question of what happiness is — and what the soul is.',
+    img:'images/ch13.jpg' },
+  { num:14, title:'If Only God Is Independent, What Does Independence Mean?',
+    q:'If everything depends upon something else — must there be something that depends upon nothing?',
+    body:'The regress of dependence must terminate somewhere. That termination point is God, in most theistic traditions. But once independence is attributed only to God, the soul\'s independence — its capacity to act, choose, or bear responsibility — appears to become questionable.\n\nThis is the dependence at the heart of the enquiry. Not merely the metaphysical claim, but its consequences for everything the soul does, chooses, or is held accountable for.',
+    img:'images/ch14.jpg' },
+  { num:15, title:'Can an Infinite Being Completely Know an Infinite Nature?',
+    q:'If God\'s qualities are infinite — does knowing all of them place a boundary on infinity?',
+    body:'The question arose not to challenge omniscience, but to examine what omniscience precisely means when the object of knowledge is itself infinite. Does complete knowledge of an infinite nature require something that bounds or contains it?\n\nThe enquiry pressed the concept until its precise meaning became clearer — and until the question of whether infinity can be fully known resolved into a more careful question about what kind of knowing is involved.',
+    img:'images/ch15.jpg' },
+  { num:16, title:'If God Already Knows Every Choice, Am I Truly Free?',
+    q:'If God already knows every choice I will make — is there a genuine alternative?',
+    body:'Various responses were encountered — that foreknowledge does not cause, that time works differently for God, that freedom is compatible with foreknowledge. Each was examined carefully.\n\nThe enquiry was less interested in defending a position than in understanding what free will would even need to mean if the outcome is always already known. The question turned out to be not about freedom versus determination, but about what kind of reality choices have.',
+    img:'images/ch16.jpg' },
+  { num:17, title:'If God Can Grant Liberation, Why Not Liberate Every Soul?',
+    q:'If every soul seeks happiness — why doesn\'t God simply grant liberation to every soul?',
+    body:'One response distinguished between what God can do and what God will do — introducing karma, merit, and the soul\'s own trajectory. But this raised its own questions: if karma can be overridden in principle, why isn\'t it? If it cannot be overridden even by God, what does that imply about God\'s independence?\n\nThe enquiry found that the question of universal liberation was not peripheral. It went to the centre of what God, karma, and liberation each independently meant.',
+    img:'images/ch17.jpg' },
+  { num:18, title:'How Does Beginningless Karma Become My Karma?',
+    q:'If karma is beginningless — how does it become mine?',
+    body:'The soul and karma appear distinct — one is the experiencer, the other the residue of action. But if karma is beginningless, there is no original act that generated it. There was no moment at which I acquired it.\n\nThe enquiry examined what "belonging" means in this context. In what sense can something be mine if there was no moment of acquisition? The question turned out to have consequences not only for karma but for identity itself.',
+    img:'images/ch18.jpg' },
+  { num:19, title:'Does Beginninglessness Actually Explain?',
+    q:'What does "beginningless as a stream" actually explain?',
+    body:'The concept reappeared across traditions whenever a problem seemed intractable. When asked why karma differs between souls, the answer was: karma is beginningless. When asked why souls differ, the answer was: souls have always differed.\n\nBut the enquiry asked directly: does declaring something beginningless resolve the difficulty, or does it relocate it to a point where it cannot be examined? A beginningless stream still flows in a particular direction — and that direction still requires explanation.',
+    img:'images/ch19.jpg' },
+  { num:20, title:'Why Did Physics Enter This Enquiry?',
+    q:'Why did modern physics enter a philosophical enquiry about the soul?',
+    body:'It was not because physics proves Vedānta. It was because a comparison was being drawn in the traditions themselves — between the soul\'s intrinsic nature and something like a fundamental field in physics.\n\nIf the comparison was being invoked to clarify a philosophical concept, the enquiry required examining whether the comparison was legitimate — and whether physics actually said what was being attributed to it.',
+    img:'images/ch20.jpg' },
+  { num:21, title:'Can Svabhāva Explain Difference?',
+    q:'If every soul has an intrinsic nature — does that explain why souls differ?',
+    body:'Modern physics speaks of different fields, each manifesting differently. An electron field never manifests as a photon. If souls have intrinsic natures analogous to fundamental fields, their differences might be similarly basic — not requiring further explanation.\n\nBut the enquiry asked: does naming this intrinsic nature "svabhāva" actually explain the difference between souls, or does it simply assert that the difference is irreducible? And if irreducible — what follows from that?',
+    img:'images/ch21.jpg' },
+  { num:22, title:'Does Saṃsāra Reveal the Soul or Change It?',
+    q:'Does saṃsāra change the soul — or does it reveal what the soul already is?',
+    body:'Both possibilities appeared significant. If saṃsāra changes the soul, then liberation is a genuine transformation. If it merely reveals, then what appears as growth or purification is actually disclosure of a nature always already present.\n\nEach possibility had consequences for what karma, bondage, and liberation ultimately meant. The enquiry examined which possibility was more consistent with what had been established — and found that the question resisted a simple answer.',
+    img:'images/ch22.jpg' },
+  { num:23, title:'If God Is Neutral, Why Must Souls Suffer?',
+    q:'If God is perfectly just — why should a soul experience suffering contrary to its intrinsic nature?',
+    body:'One answer invoked karma — the soul suffers because of its own past actions. But the enquiry pressed: if the soul\'s intrinsic nature is happiness, and suffering is contrary to that nature, then suffering is not merely unpleasant but philosophically anomalous.\n\nWhat exactly is suffering doing, if the soul is intrinsically otherwise? And if God is perfectly neutral and just — what is the structure of justice that permits a soul whose intrinsic nature is happiness to experience its opposite?',
+    img:'images/ch23.jpg' },
+  { num:24, title:'Does Every Soul Ultimately Seek Happiness?',
+    q:'Does every soul seek happiness? The answer that seemed obvious at the start now required the most careful examination.',
+    body:'The enquiry had begun here. It returned here. But the question was no longer simple.\n\nAfter examining the soul, its intrinsic nature, its dependence on God, the structure of suffering, and the purpose of saṃsāra — the question of what "seeking happiness" actually meant had become philosophically precise in a way it could not have been at the beginning. The simplest question turned out to be the last question. That is the architecture of this enquiry.',
+    img:'images/ch24.jpg' },
+];
+
+// Thematic connections: [from, to, reason]
+const EDGES = [
+  [1, 2,  'Who exactly is seeking?'],
+  [1, 8,  'Where does the sought thing actually reside?'],
+  [1, 13, 'Where does happiness actually exist?'],
+  [1, 24, 'The first question becomes the last'],
+  [2, 3,  'One observer — yet a plural world'],
+  [2, 7,  'The observer and the soul before it knows'],
+  [2, 10, 'Witnessing and knowing — are they the same?'],
+  [3, 4,  'Multiplicity leads to difference'],
+  [3, 5,  'Advaita\'s response to multiplicity'],
+  [4, 6,  'Explaining difference through beginninglessness'],
+  [4, 21, 'Svabhāva as the ground of difference'],
+  [5, 6,  'Māyā and beginninglessness — parallel strategies'],
+  [5, 19, 'Both explain by relocating the question'],
+  [6, 18, 'Beginninglessness and the ownership of karma'],
+  [6, 19, 'Does beginninglessness actually explain?'],
+  [7, 8,  'The soul before knowing — and what belongs to it'],
+  [7, 9,  'Svarūpa: the soul\'s intrinsic nature'],
+  [8, 11, 'If happiness belongs to the soul — what is suffering?'],
+  [8, 13, 'Happiness belongs to — what? where?'],
+  [9, 21, 'Svarūpa and svabhāva — intrinsic natures'],
+  [10, 7, 'Knowledge and the soul\'s essential mode'],
+  [11, 12,'Suffering as absence — the darkness analogy'],
+  [11, 23,'Why must the soul whose nature is happiness suffer?'],
+  [12, 13,'From darkness to the location of happiness'],
+  [13, 14,'Happiness and the structure of dependence'],
+  [14, 15,'God\'s independence and infinite knowledge'],
+  [14, 16,'Dependence and freedom of choice'],
+  [14, 17,'God\'s independence and the liberation question'],
+  [15, 16,'Knowing all choices and genuine freedom'],
+  [16, 17,'Freedom and why liberation is not universal'],
+  [17, 22,'Liberation and what saṃsāra is doing'],
+  [17, 23,'God\'s justice and why suffering persists'],
+  [18, 19,'Two examinations of beginninglessness'],
+  [18, 6, 'Karma\'s beginninglessness — the deeper question'],
+  [19, 5, 'Both use the same explanatory move'],
+  [20, 21,'Physics entered — and pointed toward svabhāva'],
+  [20, 9, 'Fields and intrinsic natures'],
+  [21, 4, 'Svabhāva traces back to the problem of difference'],
+  [22, 8, 'Saṃsāra\'s role and what belongs to the soul'],
+  [22, 23,'Revelation or change — and the justice of suffering'],
+  [23, 11,'Suffering under God\'s justice — and its reality'],
+  [24, 22,'The final question and saṃsāra\'s purpose'],
+  [24, 1, 'The enquiry is circular — and that is its answer'],
+];
+
+// Build adjacency (0-indexed)
+const ADJ = Array.from({length:24}, () => []);
+EDGES.forEach(([a,b,r]) => {
+  ADJ[a-1].push({to:b-1, reason:r});
+  ADJ[b-1].push({to:a-1, reason:r});
+});
+
+// Part lookup (0-indexed chapter → part index)
+const CH_PART = new Array(24);
+PARTS.forEach((p,pi) => p.chs.forEach(c => CH_PART[c-1] = pi));
+
+/* ═══════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════ */
+let currentCh = -1;
+let readingOrder = [];
+let readingPos = -1;
+function beginReadingOrder() {
+  const pool = Array.from({length:23}, (_,i)=>i);
+  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  readingOrder=[...pool,23]; readingPos=-1;
+  document.getElementById('nav-order').textContent='Personal order · finale reserved';
+  openChapter(readingOrder[0]);
+}
+const visited = new Set(
+  (() => { try { return JSON.parse(localStorage.getItem('aod_visited')||'[]'); } catch(e){return [];} })()
+);
+function markVisited(i) {
+  visited.add(i);
+  try { localStorage.setItem('aod_visited', JSON.stringify([...visited])); } catch(e){}
+  updateProgress();
+}
+function updateProgress() {
+  document.getElementById('nav-progress').textContent =
+    visited.size + ' / 24 chapters explored';
+}
+
+function syncUrl(idx) { history.pushState({chapter:idx}, '', idx >= 0 ? '#chapter-'+(idx+1) : '#map'); }
+
+/* ═══════════════════════════════════════════════════════════
+   SUGGESTIONS
+═══════════════════════════════════════════════════════════ */
+function getSuggestions(idx) {
+  const neighbors = ADJ[idx].map(e => e.to);
+  // prefer unvisited
+  const unvis = neighbors.filter(i => !visited.has(i));
+  const vis   = neighbors.filter(i =>  visited.has(i));
+  const pool  = [...unvis, ...vis];
+  return pool.slice(0, 3).map(to => {
+    const edge = ADJ[idx].find(e => e.to === to);
+    return { chIdx: to, reason: edge ? edge.reason : '' };
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STARFIELD
+═══════════════════════════════════════════════════════════ */
+(function() {
+  const c = document.getElementById('c-stars');
+  const ctx = c.getContext('2d');
+  let W, H, stars = [];
+  function resize() {
+    W = c.width = window.innerWidth; H = c.height = window.innerHeight;
+    stars = Array.from({length:260}, () => ({
+      x:Math.random()*W, y:Math.random()*H,
+      r:Math.random()*1.2+0.15,
+      a:Math.random()*0.8+0.1,
+      tw:Math.random()*Math.PI*2,
+      sp:Math.random()*0.004+0.001
+    }));
+  }
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s => {
+      s.tw += s.sp;
+      const a = s.a*(0.5+0.5*Math.sin(s.tw));
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle = `rgba(200,225,255,${a})`; ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  resize(); window.addEventListener('resize',resize); draw();
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   KALEIDOSCOPE (intro bg)
+═══════════════════════════════════════════════════════════ */
+(function() {
+  const c = document.getElementById('c-kaleido');
+  const ctx = c.getContext('2d');
+  let W, H, t = 0;
+  function resize() { W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    const cx=W/2, cy=H/2, R=Math.min(W,H)*0.44;
+    const segs = 12;
+    ctx.save(); ctx.translate(cx,cy);
+    for (let s=0; s<segs; s++) {
+      ctx.save(); ctx.rotate(s*(Math.PI*2/segs) + t*0.07);
+      for (let i=0; i<6; i++) {
+        const a0 = (i/6)*(Math.PI*2/segs);
+        const a1 = ((i+1)/6)*(Math.PI*2/segs);
+        const d  = R*(0.25+0.75*(i/6));
+        const d2 = R*(0.25+0.75*((i+1)/6));
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.lineTo(Math.cos(a0)*d, Math.sin(a0)*d);
+        ctx.lineTo(Math.cos(a1)*d2, Math.sin(a1)*d2);
+        ctx.closePath();
+        const hue = (200 + i*22 + t*8) % 360;
+        ctx.fillStyle = `hsla(${hue},70%,55%,0.028)`;
+        ctx.fill();
+        ctx.strokeStyle = `hsla(${hue},80%,60%,0.06)`;
+        ctx.lineWidth = 0.5; ctx.stroke();
+      }
+      ctx.restore();
+    }
+    ctx.restore();
+    t += 0.4;
+    requestAnimationFrame(draw);
+  }
+  resize(); window.addEventListener('resize',resize); draw();
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   THREE.JS TRON GRID
+═══════════════════════════════════════════════════════════ */
+let threeR, threeS, threeC, gridG;
+(function() {
+  const canvas = document.getElementById('c-grid');
+  threeR = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  threeR.setPixelRatio(window.devicePixelRatio);
+  threeR.setSize(window.innerWidth, window.innerHeight);
+  threeS = new THREE.Scene();
+  threeS.fog = new THREE.FogExp2(0x030509, 0.052);
+  threeC = new THREE.PerspectiveCamera(54, window.innerWidth/window.innerHeight, 0.1, 300);
+  threeC.position.set(0,13,26); threeC.lookAt(0,0,-8);
+  gridG = new THREE.Group();
+  gridG.add(new THREE.GridHelper(240,60,0x001C2E,0x000D17));
+  const lm = new THREE.LineBasicMaterial({color:0x003850,transparent:true,opacity:0.7});
+  for (let z=-120;z<=120;z+=12) {
+    const g = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-120,-1.8,z), new THREE.Vector3(120,-1.8,z)]);
+    gridG.add(new THREE.Line(g,lm));
+  }
+  const cm = new THREE.LineBasicMaterial({color:0x0099BB,transparent:true,opacity:0.8});
+  gridG.add(new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(0,-1.8,-120),new THREE.Vector3(0,-1.8,120)]),cm));
+  threeS.add(gridG);
+  window.addEventListener('resize',()=>{
+    threeC.aspect = window.innerWidth/window.innerHeight;
+    threeC.updateProjectionMatrix();
+    threeR.setSize(window.innerWidth,window.innerHeight);
+  });
+  (function animate() {
+    requestAnimationFrame(animate);
+    if(gridG) { gridG.position.z += 0.055; if(gridG.position.z>12) gridG.position.z=0; }
+    threeR.render(threeS,threeC);
+  })();
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   CONSTELLATION MAP
+═══════════════════════════════════════════════════════════ */
+const mapCanvas = document.getElementById('c-map');
+const mctx = mapCanvas.getContext('2d');
+let MW, MH, hoveredCh = -1, mapActive = false;
+let nodePositions = [];
+let animT = 0;
+
+function getPos(i) {
+  const cx = MW/2, cy = MH/2;
+  const R = Math.min(MW,MH) * 0.36;
+  const angle = -Math.PI/2 + (i/24)*Math.PI*2;
+  return { x: cx+Math.cos(angle)*R, y: cy+Math.sin(angle)*R, angle };
+}
+
+function resizeMap() {
+  MW = mapCanvas.width = window.innerWidth;
+  MH = mapCanvas.height = window.innerHeight;
+  nodePositions = CHAPTERS.map((_,i) => getPos(i));
+}
+
+function drawMap() {
+  if (!mapActive) { requestAnimationFrame(drawMap); return; }
+  mctx.clearRect(0,0,MW,MH);
+  const cx=MW/2, cy=MH/2;
+  animT += 0.012;
+
+  // Part arcs background
+  PARTS.forEach((p,pi) => {
+    const first = p.chs[0]-1, last = p.chs[p.chs.length-1]-1;
+    const a0 = -Math.PI/2 + (first/24)*Math.PI*2 - 0.04;
+    const a1 = -Math.PI/2 + (last/24)*Math.PI*2 + (1/24)*Math.PI*2 + 0.04;
+    const R = Math.min(MW,MH)*0.36;
+    const col = PART_COLORS[pi];
+    mctx.beginPath();
+    mctx.arc(cx, cy, R+22, a0, a1);
+    mctx.arc(cx, cy, R-22, a1, a0, true);
+    mctx.closePath();
+    mctx.fillStyle = col+'18';
+    mctx.strokeStyle = col+'40';
+    mctx.lineWidth = 0.5;
+    mctx.fill(); mctx.stroke();
+    // Part label
+    const midAngle = (a0+a1)/2;
+    const labelR = R + 44;
+    const lx = cx + Math.cos(midAngle)*labelR;
+    const ly = cy + Math.sin(midAngle)*labelR;
+    mctx.save(); mctx.translate(lx,ly);
+    mctx.fillStyle = col+'88';
+    mctx.font = '500 9px Rajdhani, sans-serif';
+    mctx.textAlign = 'center'; mctx.textBaseline = 'middle';
+    mctx.letterSpacing = '2px';
+    mctx.fillText('Part '+p.roman, 0, 0);
+    mctx.restore();
+  });
+
+  // Connection lines
+  EDGES.forEach(([a,b]) => {
+    const pa = nodePositions[a-1], pb = nodePositions[b-1];
+    const ca = PART_COLORS[CH_PART[a-1]], cb = PART_COLORS[CH_PART[b-1]];
+    const isHovA = hoveredCh === a-1, isHovB = hoveredCh === b-1;
+    const isHov = isHovA || isHovB;
+    const isVis = visited.has(a-1) || visited.has(b-1);
+    const alpha = isHov ? 0.75 : isVis ? 0.18 : 0.08;
+    const width  = isHov ? 1.5 : 0.6;
+
+    mctx.beginPath();
+    // Bezier through near-center
+    const cpx = cx + (cx - (pa.x+pb.x)/2)*0.18;
+    const cpy = cy + (cy - (pa.y+pb.y)/2)*0.18;
+    mctx.moveTo(pa.x, pa.y);
+    mctx.quadraticCurveTo(cpx, cpy, pb.x, pb.y);
+    const grad = mctx.createLinearGradient(pa.x,pa.y,pb.x,pb.y);
+    grad.addColorStop(0, ca + Math.round(alpha*255).toString(16).padStart(2,'0'));
+    grad.addColorStop(1, cb + Math.round(alpha*255).toString(16).padStart(2,'0'));
+    mctx.strokeStyle = grad; mctx.lineWidth = width;
+    mctx.stroke();
+  });
+
+  // Nodes
+  CHAPTERS.forEach((ch,i) => {
+    const {x,y} = nodePositions[i];
+    const col = PART_COLORS[CH_PART[i]];
+    const isHov = hoveredCh === i;
+    const isVis = visited.has(i);
+    const pulse = 1 + 0.12*Math.sin(animT + i*0.6);
+    const r = (isHov ? 10 : isVis ? 7 : 5.5) * pulse;
+
+    // Outer glow
+    const gAlpha = isHov ? 0.35 : isVis ? 0.2 : 0.12;
+    const gRad = mctx.createRadialGradient(x,y,0,x,y,r*3.5);
+    gRad.addColorStop(0, col + Math.round(gAlpha*255).toString(16).padStart(2,'0'));
+    gRad.addColorStop(1, col + '00');
+    mctx.beginPath(); mctx.arc(x,y,r*3.5,0,Math.PI*2);
+    mctx.fillStyle = gRad; mctx.fill();
+
+    // Core
+    mctx.beginPath(); mctx.arc(x,y,r,0,Math.PI*2);
+    mctx.fillStyle = isHov ? col : isVis ? col+'CC' : col+'77';
+    mctx.fill();
+
+    // Chapter number
+    mctx.save(); mctx.translate(x,y);
+    mctx.fillStyle = isHov ? '#030509' : 'rgba(3,5,9,0.85)';
+    mctx.font = `600 ${isHov?8.5:6.5}px Rajdhani, sans-serif`;
+    mctx.textAlign = 'center'; mctx.textBaseline = 'middle';
+    mctx.fillText(String(i+1).padStart(2,'0'), 0, 0.5);
+    mctx.restore();
+
+    // Visited ring
+    if (isVis && !isHov) {
+      mctx.beginPath(); mctx.arc(x,y,r+3,0,Math.PI*2);
+      mctx.strokeStyle = col+'55'; mctx.lineWidth=1; mctx.stroke();
+    }
+  });
+
+  // Center mandala
+  const innerR = Math.min(MW,MH)*0.11;
+  mctx.save(); mctx.translate(cx,cy);
+  mctx.rotate(animT*0.3);
+  for (let s=0; s<8; s++) {
+    mctx.rotate(Math.PI*2/8);
+    mctx.beginPath();
+    mctx.moveTo(0,0); mctx.lineTo(0, innerR);
+    mctx.strokeStyle = 'rgba(0,200,240,0.06)';
+    mctx.lineWidth=1; mctx.stroke();
+  }
+  mctx.restore();
+  // Center dot
+  const cGrad = mctx.createRadialGradient(cx,cy,0,cx,cy,innerR*0.4);
+  cGrad.addColorStop(0,'rgba(0,200,240,0.12)'); cGrad.addColorStop(1,'rgba(0,0,0,0)');
+  mctx.beginPath(); mctx.arc(cx,cy,innerR*0.4,0,Math.PI*2);
+  mctx.fillStyle=cGrad; mctx.fill();
+
+  requestAnimationFrame(drawMap);
+}
+
+resizeMap(); window.addEventListener('resize',()=>{ resizeMap(); });
+
+// Map mouse interaction
+mapCanvas.addEventListener('mousemove', e => {
+  if (!mapActive) return;
+  const rect = mapCanvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  let closest = -1, minD = 28;
+  nodePositions.forEach(({x,y},i) => {
+    const d = Math.hypot(mx-x,my-y);
+    if (d < minD) { minD=d; closest=i; }
+  });
+  if (closest !== hoveredCh) {
+    hoveredCh = closest;
+    mapCanvas.style.cursor = closest>=0 ? 'pointer' : 'default';
+    const tt = document.getElementById('ch-tooltip');
+    if (closest>=0) {
+      const ch = CHAPTERS[closest], pi = CH_PART[closest];
+      document.getElementById('tt-part').textContent = 'Part '+PARTS[pi].roman+' — '+PARTS[pi].title;
+      document.getElementById('tt-part').style.color = PART_COLORS[pi];
+      document.getElementById('tt-num').textContent = 'Chapter '+ch.num;
+      document.getElementById('tt-title').textContent = ch.title;
+      const {x,y} = nodePositions[closest];
+      const tx = Math.min(x+20, MW-280), ty = Math.max(y-80, 60);
+      tt.style.left = tx+'px'; tt.style.top = ty+'px'; tt.style.opacity='1';
+    } else {
+      tt.style.opacity='0';
+    }
+  }
+});
+
+mapCanvas.addEventListener('mouseleave',()=>{
+  hoveredCh=-1; mapCanvas.style.cursor='default';
+  document.getElementById('ch-tooltip').style.opacity='0';
+});
+
+mapCanvas.addEventListener('click', e => {
+  if (!mapActive || hoveredCh<0) return;
+  openChapter(hoveredCh);
+});
+
+/* ═══════════════════════════════════════════════════════════
+   HYPERSPACE
+═══════════════════════════════════════════════════════════ */
+function hyperspace(cb) {
+  const c = document.getElementById('c-hyper');
+  const ctx = c.getContext('2d');
+  c.width = window.innerWidth; c.height = window.innerHeight;
+  const cx=c.width/2, cy=c.height/2;
+  const lines = Array.from({length:200},()=>({
+    angle:Math.random()*Math.PI*2,
+    dist:Math.random()*60,
+    speed:14+Math.random()*32,
+    width:Math.random()*1.4+0.2,
+    crimson:Math.random()<0.12
+  }));
+  let t=0, dur=50;
+  function frame() {
+    ctx.fillStyle='rgba(3,5,9,0.3)'; ctx.fillRect(0,0,c.width,c.height);
+    lines.forEach(l=>{
+      const d0=l.dist+l.speed*t, d1=d0+l.speed*3.2;
+      const al = Math.min(1,t/10)*(1-Math.max(0,(t-dur+10))/10);
+      ctx.beginPath();
+      ctx.moveTo(cx+Math.cos(l.angle)*d0, cy+Math.sin(l.angle)*d0);
+      ctx.lineTo(cx+Math.cos(l.angle)*d1, cy+Math.sin(l.angle)*d1);
+      ctx.strokeStyle = l.crimson ? `rgba(200,80,70,${al*0.9})` : `rgba(190,235,255,${al*0.85})`;
+      ctx.lineWidth = l.width*(1+t/dur); ctx.stroke();
+    });
+    t++;
+    if (t<dur) requestAnimationFrame(frame);
+    else { ctx.clearRect(0,0,c.width,c.height); if(cb) cb(); }
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SCREEN MANAGER
+═══════════════════════════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  const onMap = id==='s-map' || id==='s-chapter';
+  document.getElementById('c-grid').style.opacity = onMap ? '0.9' : '0';
+  document.getElementById('c-kaleido').style.opacity = id==='s-intro' ? '1' : '0';
+  document.getElementById('c-atmos').style.opacity = id==='s-chapter' ? '1' : '0';
+  document.getElementById('top-nav').classList.toggle('vis', id!=='s-intro');
+  mapActive = id==='s-map';
+  if (mapActive) mapCanvas.style.pointerEvents='all';
+  else mapCanvas.style.pointerEvents='none';
+  document.getElementById('c-map').style.opacity = id==='s-map' ? '1' : '0';
+}
+
+function goTo(id, cb) {
+  hyperspace(()=>{ showScreen(id); if(cb) cb(); });
+}
+
+/* Chapter atmosphere: floating motes shift from calm drift to chaotic turbulence. */
+const atmosphere = { canvas:document.getElementById('c-atmos'), ctx:null, motes:[], mood:0, target:0, color:'#00C8F0' };
+atmosphere.ctx = atmosphere.canvas.getContext('2d');
+function resizeAtmos(){ atmosphere.canvas.width=innerWidth; atmosphere.canvas.height=innerHeight; atmosphere.motes=Array.from({length:90},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*2+.3,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,a:Math.random()*.45+.08,p:Math.random()*6.28})); }
+function drawAtmos(){ const c=atmosphere.canvas, x=atmosphere.ctx; x.clearRect(0,0,c.width,c.height); atmosphere.mood+=(atmosphere.target-atmosphere.mood)*.025; atmosphere.motes.forEach(m=>{ const chaos=atmosphere.mood; m.p+=.01+chaos*.035; m.x+=m.vx+Math.sin(m.p)*chaos*1.7; m.y+=m.vy+Math.cos(m.p*1.3)*chaos*1.4; if(m.x<0)m.x=c.width;if(m.x>c.width)m.x=0;if(m.y<0)m.y=c.height;if(m.y>c.height)m.y=0; x.beginPath();x.arc(m.x,m.y,m.r*(1+chaos*1.6),0,Math.PI*2);x.fillStyle=atmosphere.color+Math.floor(m.a*(1+chaos)*255).toString(16).padStart(2,'0');x.fill(); }); requestAnimationFrame(drawAtmos); }
+function setAtmosphere(idx){ const pi=CH_PART[idx]||0; atmosphere.target=[.15,.25,.4,.75,.35,.65,.5,.8,.7][pi]; atmosphere.color=PART_COLORS[pi]||'#00C8F0'; document.getElementById('c-atmos').style.opacity='1'; }
+resizeAtmos(); addEventListener('resize',resizeAtmos); drawAtmos();
+
+/* ═══════════════════════════════════════════════════════════
+   CHAPTER VIEW
+═══════════════════════════════════════════════════════════ */
+function openChapter(idx) {
+  currentCh = idx;
+  setAtmosphere(idx); tuneSound(idx);
+  const routeIndex = readingOrder.indexOf(idx);
+  if(routeIndex >= 0) readingPos = routeIndex;
+  markVisited(idx);
+  const ch = CHAPTERS[idx];
+  const pi = CH_PART[idx];
+  const p = PARTS[pi];
+  const col = PART_COLORS[pi];
+  syncUrl(idx);
+
+  document.getElementById('ch-img').src = ch.img;
+  document.getElementById('ch-eyebrow').innerHTML =
+    `<span style="color:${col}">Part ${p.roman}</span>&nbsp; · &nbsp;Chapter ${ch.num}&nbsp; · &nbsp;<span style="opacity:.55">${p.title}</span>`;
+  document.getElementById('ch-heading').textContent = ch.title;
+  document.getElementById('ch-q').textContent = ch.q;
+  document.getElementById('ch-way-in').textContent = p.desc;
+  const nextEdge = ADJ[idx][0];
+  document.getElementById('ch-turn').textContent = nextEdge ? nextEdge.reason : 'The question opens into the next perspective.';
+
+  const contentEl = document.getElementById('ch-content');
+  contentEl.innerHTML = ch.body.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join('');
+
+  // Suggestions
+  const sugs = getSuggestions(idx);
+  const cards = document.getElementById('sug-cards');
+  cards.innerHTML = '';
+  sugs.forEach(({chIdx, reason}) => {
+    const sc = CHAPTERS[chIdx];
+    const spi = CH_PART[chIdx];
+    const scol = PART_COLORS[spi];
+    const sp = PARTS[spi];
+    const card = document.createElement('div');
+    card.className = 'sug-card';
+    card.style.setProperty('--card-col', scol);
+    card.innerHTML = `
+      <div class="sug-card-img"><img src="${sc.img}" alt=""></div>
+      <div class="sug-card-body">
+        <div class="sug-part-tag" style="color:${scol}">Part ${sp.roman}</div>
+        <div class="sug-num">Chapter ${sc.num}</div>
+        <div class="sug-title">${sc.title}</div>
+        <div class="sug-reason">${reason}</div>
+      </div>
+      <div class="sug-card::after" style="background:${scol}"></div>
+      <span class="sug-card-arrow">→</span>`;
+    card.style.borderColor = scol+'28';
+    card.addEventListener('mouseenter',()=>{ card.style.borderColor=scol+'66'; });
+    card.addEventListener('mouseleave',()=>{ card.style.borderColor=scol+'28'; });
+    card.addEventListener('click',()=> openChapter(chIdx));
+    cards.appendChild(card);
+  });
+
+  // Bottom color accent on cards (after pseudo is not settable via JS easily, use ::before workaround)
+  document.querySelectorAll('.sug-card').forEach((c,i) => {
+    const scol = PART_COLORS[CH_PART[sugs[i].chIdx]];
+    const accent = document.createElement('div');
+    accent.style.cssText = `position:absolute;bottom:0;left:0;right:0;height:2px;background:${scol}44`;
+    c.appendChild(accent);
+  });
+
+  if(readingOrder.length && routeIndex >= 0){
+    const prevRoute=readingOrder[(readingPos-1+readingOrder.length)%readingOrder.length], nextRoute=readingOrder[(readingPos+1)%readingOrder.length];
+    document.querySelector('#prev-ch span').textContent='Chapter '+CHAPTERS[prevRoute].num+' · '+CHAPTERS[prevRoute].title;
+    document.querySelector('#next-ch span').textContent='Chapter '+CHAPTERS[nextRoute].num+' · '+CHAPTERS[nextRoute].title;
+    document.getElementById('nav-progress').textContent=(readingPos+1)+' / '+readingOrder.length+' perspectives';
+  }
+  goTo('s-chapter', ()=>{ document.getElementById('s-chapter').scrollTo(0,0); });
+  const prev = (idx + 23) % 24, next = (idx + 1) % 24;
+  document.querySelector('#prev-ch span').textContent = 'Chapter '+CHAPTERS[prev].num+' · '+CHAPTERS[prev].title;
+  document.querySelector('#next-ch span').textContent = 'Chapter '+CHAPTERS[next].num+' · '+CHAPTERS[next].title;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   EVENTS
+═══════════════════════════════════════════════════════════ */
+document.getElementById('btn-enter').addEventListener('click',()=>{
+  beginReadingOrder();
+});
+document.getElementById('btn-map-free').addEventListener('click',()=>{ readingOrder=[]; readingPos=-1; document.getElementById('nav-order').textContent='Free exploration'; goTo('s-map'); drawMap(); });
+
+document.getElementById('nav-map-btn').addEventListener('click',()=>{
+  hyperspace(()=>{ readingOrder=[]; readingPos=-1; document.getElementById('nav-order').textContent='Free exploration'; showScreen('s-map'); mapActive=true; mapCanvas.style.pointerEvents='all'; syncUrl(-1); });
+});
+
+document.getElementById('prev-ch').addEventListener('click',()=>openChapter(readingOrder.length ? readingOrder[(readingPos-1+readingOrder.length)%readingOrder.length] : (currentCh+23)%24));
+document.getElementById('next-ch').addEventListener('click',()=>openChapter(readingOrder.length ? readingOrder[(readingPos+1)%readingOrder.length] : (currentCh+1)%24));
+window.addEventListener('popstate',()=>{ const m=location.hash.match(/chapter-(\d+)/); if(m) openChapter(Math.max(0,Math.min(23,Number(m[1])-1))); else showScreen('s-map'); });
+
+// Original psychedelic beat-cycle soundscape: syncopated pulse, sub-bass and stereo movement.
+let audioCtx, masterGain, beatTimer, beatStep=0, beatProfile=0;
+const SOUND_PROFILES=[
+  {bpm:78, cycle:16, root:55, swing:.12, pan:-.1}, {bpm:84, cycle:12, root:62, swing:.08, pan:.15}, {bpm:96, cycle:15, root:73, swing:.16, pan:.3},
+  {bpm:68, cycle:18, root:48, swing:.2, pan:-.3}, {bpm:88, cycle:14, root:82, swing:.1, pan:.2}, {bpm:102, cycle:13, root:44, swing:.18, pan:-.25},
+  {bpm:74, cycle:16, root:58, swing:.14, pan:.3}, {bpm:110, cycle:11, root:39, swing:.22, pan:-.15}, {bpm:80, cycle:17, root:52, swing:.16, pan:.12}
+];
+function tuneSound(idx){ beatProfile=CH_PART[idx]||0; }
+function blip(freq,duration,type,volume,pan=0){ const now=audioCtx.currentTime, o=audioCtx.createOscillator(), g=audioCtx.createGain(), p=audioCtx.createStereoPanner(); o.type=type;o.frequency.setValueAtTime(freq,now);g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(volume,now+.008);g.gain.exponentialRampToValueAtTime(.0001,now+duration);p.pan.value=pan;o.connect(g).connect(p).connect(masterGain);o.start(now);o.stop(now+duration+.02); }
+function tickBeat(){ if(!audioCtx)return; const p=SOUND_PROFILES[beatProfile], s=beatStep%p.cycle, bar=Math.floor(beatStep/p.cycle), swing=(s%2?p.swing:0), pan=p.pan+Math.sin(beatStep*.37)*.35; if(s===0||s===7||s===11) blip(48, .18,'sine',.075,pan); if(s===4||s===10||s===14%p.cycle) blip(1800+(bar%3)*220,.045,'square',.018,-pan); if(s%3===1) blip(p.root*(s%5===0?2:1),.22,'triangle',.028,pan); if((bar+s)%9===4) blip(p.root*3,.35,'sine',.018,-pan); beatStep++; beatTimer=setTimeout(tickBeat,Math.max(70,60000/p.bpm/2*(1+swing))); }
+document.getElementById('sound-btn').addEventListener('click', async ()=>{
+  const btn=document.getElementById('sound-btn');
+  if(!audioCtx){ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); masterGain=audioCtx.createGain(); masterGain.gain.value=0; masterGain.connect(audioCtx.destination); tuneSound(currentCh<0?0:currentCh); }
+  if(audioCtx.state==='suspended') await audioCtx.resume();
+  const on=btn.classList.toggle('on'); masterGain.gain.cancelScheduledValues(audioCtx.currentTime); masterGain.gain.linearRampToValueAtTime(on?.72:0,audioCtx.currentTime+.8); if(on){beatStep=0;clearTimeout(beatTimer);tickBeat();}else clearTimeout(beatTimer); btn.textContent=on?'Beat on':'Beat off'; btn.setAttribute('aria-pressed',on);
+});
+
+document.addEventListener('keydown',e=>{
+  if (e.key==='Escape' && document.getElementById('s-chapter').classList.contains('on')) {
+    hyperspace(()=>{ showScreen('s-map'); mapActive=true; mapCanvas.style.pointerEvents='all'; syncUrl(-1); });
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════ */
+showScreen('s-intro');
+updateProgress();
+drawMap();
+if(location.hash.match(/chapter-(\d+)/)) openChapter(Math.max(0,Math.min(23,Number(RegExp.$1)-1)));
+</script>
+</body>
+</html>
