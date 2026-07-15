@@ -1101,7 +1101,7 @@ let narrationActive = false;
 let narrationVoice = null;
 let narrationRun = 0;
 const NARRATION_TRACKS = Array(24).fill(null);
-for (let i=0; i<13; i++) NARRATION_TRACKS[i] = `audio/narration/chapter-${String(i+1).padStart(2,'0')}.mp3`;
+for (let i=0; i<24; i++) NARRATION_TRACKS[i] = `audio/narration/chapter-${String(i+1).padStart(2,'0')}.mp3`;
 const narrationAudio = new Audio();
 narrationAudio.preload = 'metadata';
 narrationAudio.onended = () => { narrationActive=false; setMusicVolume(); };
